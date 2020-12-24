@@ -7,9 +7,10 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "npm run build:dev",
-    "build:dev": "nodemon 'index.ts' --exec 'ts-node' index.ts -e ts,graphql"
+    "build:dev": "nodemon 'index.js' --exec 'ts-node' index.js -e ts,graphql"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^7.1.2",
     "apollo-server": "^2.19.1"
   },
   "devDependencies": {
