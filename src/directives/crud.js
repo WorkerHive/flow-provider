@@ -1,23 +1,28 @@
 const { SchemaDirectiveVisitor } = require("apollo-server");
 
-class ConfigurableDirective extends SchemaDirectiveVisitor{
+class CRUDDirective extends SchemaDirectiveVisitor{
     visitFieldDefinition(field){
+        console.log(field)
     }
 
     visitObject(object){
-        object.isConfigurable = true;
+        console.log(object.getFields())
+        object.automateCRUD = true;
     }
 
     visitSchema(schema){
+        console.log(schema)
     }
 
     visitFieldDefinition(fd, details){
+        console.log(fd)
         fd.isConfigurable = true;
         details.objectType.isConfigurable = true;
     }
 
     visitEnumValue(value){
+        console.log(value)
     }
 }
 
-module.exports = ConfigurableDirective
+module.exports = CRUDDirective

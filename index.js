@@ -1,72 +1,104 @@
 const { transformSchema, gql, ApolloServer} = require('apollo-server')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const {GraphQLNamedType, GraphQLObjectType, GraphQLType} = require('graphql')
+
+const InputDirective = require('./src/directives/input')
+const CRUDDirective = require('./src/directives/crud')
 const ConfigurableDirective = require('./src/directives/configurable')
+
 const InputTransform = require('./src/transforms/input')
+const ConfigurableTransform = require('./src/transforms/configurable')
+const CRUDTransform = require('./src/transforms/crud')
+
 const resolvers = require("./src/resolvers")
 
 
-const typeDefs = gql`
-    directive @configurable on OBJECT
+const startFlow = (typeDefs) => {
+    const { inputTransformTypeDefs, inputTransformTransformer } = InputTransform()
+    const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
+    const { crudTypeDefs, crudTransformer } = CRUDTransform();
+
+    const schema = makeExecutableSchema({
+        typeDefs: [inputTransformTypeDefs, configurableTypeDefs, crudTypeDefs, typeDefs],
+        resolvers: resolvers(),
+        schemaTransforms: [ inputTransformTransformer, configurableTransformer, crudTransformer],
+        schemaDirectives: {
+            configurable: ConfigurableDirective,
+            crud: CRUDDirective,
+            input: InputDirective
+        }
+    })
+    const server = new ApolloServer({
+        schema: schema,
+        schemaDirectives: {
+            configurable: ConfigurableDirective,
+            crud: CRUDDirective,
+            input: InputDirective
+        },
+        context: {
+            connections: {
+                flow: {
+                    add: () => {},
+                    push: () => {},
+                    delete: () => {},
+                    get: () => {},
+                    getAll: () => {},
+                }
+            }
+        }
+    })
+
+    return server;
+}
+
+module.exports = startFlow
+
+const typeDefs = `
+
+    type Query {
+        name: String
+    }
 
     type Mutation {
         setName: String
     }
     
-    type Project {
+    type Project @crud @configurable{
         id: ID
         name: String @input
         startDate: Int @input
     }
 
-    type TestDe @configurable{
-        new: String
+    type User @crud @configurable{
+        id: ID
+        name: String @input
+        email: String @input
+        username: String @input
+        password: Hash
     }
 
-    type Example{
-        new: String 
-        old: String 
+    type Equipment @crud @configurable{
+        id: ID
+        name: String @input
+        type: String @input
+        description: String @input
     }
+
+    type File @configurable {
+        id: ID
+        filename: String
+        extension: String
+    }
+
+    type Hash {
+        algo: String
+        data: String
+    }
+
 `
 
-//console.log(typeDefs.definitions.filter((a : any) => a.kind=="ObjectTypeDefinition").map((x: any) => x))
- 
-const {inputTransformTypeDefs, inputTransformTransformer} = InputTransform()
 
-const schema = makeExecutableSchema({
-    typeDefs: [inputTransformTypeDefs, typeDefs],
-    resolvers: resolvers(),
-    schemaTransforms: [ inputTransformTransformer ],
-    schemaDirectives: {
-        configurable: ConfigurableDirective
-    }
-})
-
-
-const server = new ApolloServer({schema: schema, schemaDirectives: {
-    configurable: ConfigurableDirective,
-}})
-
-let configurable = []
-
-
-for(var k in server.schema._typeMap){
-    configurable.push(server.schema._typeMap[k])
-}
-
-
-configurable = configurable.filter((a) => a.isConfigurable == true)
-
-let types = configurable.map((x) => x.getFields()).map((x) => {
-    console.log(x)
-    let fields = []
-    for(var k in x){
-        fields.push({name: x[k].name, type: x[k].type, isConfigurable: x[k].isConfigurable})
-    }
-    return fields;
-})
-
-console.log(configurable)
+let server = startFlow(typeDefs)
 
 server.listen({port: 4001}).then((conn) => {
     const {url} = conn;

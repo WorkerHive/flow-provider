@@ -2,7 +2,7 @@ const { Transform, mergeSchemas, gql } = require('apollo-server')
 const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
 const { isNativeGraphQLType } = require('./native-symbols')
 const { objectValues, compact } = require('./utils')
-const { GraphQLSchema, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
+const { GraphQLSchema, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
 
 let typeMap;
 
@@ -76,43 +76,68 @@ let typeMap;
     }
 
 function inputTransform (){
+    const makeInput = (type) => {
+        let fields = {}
+        for(var i = 0; i < type.fields.length; i++){
+            let newType;
+            switch(type.fields[i].type){
+                case 'String':
+                    newType = GraphQLString
+                    break;
+                case 'Int':
+                    newType = GraphQLInt;
+                    break;
+            }
+            fields[type.fields[i].name] = {type: type.fields[i].type}
+        }
+        return new GraphQLInputObjectType({
+            name: type.name,
+            fields: fields
+        })
+    }
+
     return {
         inputTransformTypeDefs: `directive @input on OBJECT | FIELD_DEFINITION `,
-        inputTransformTransformer: (schema) => {
+        inputTransformTransformer: (schema, fieldSet) => {
 
-            let types = []
-            let test = new GraphQLObjectType({
-                name: 'objectTest',
-                fields: {
-                    name: {type: GraphQLString }
+            let types = objectValues(schema._typeMap).filter((a) => a instanceof GraphQLObjectType).map((x) => ({
+                ...x,
+                fields: objectValues(x.getFields()) 
+            }))
+            
+            types = types.filter((a) => {
+                let fieldDirectives = a.fields
+                    .filter((a) => a.astNode)
+                    .map((x) =>{
+                       return x.astNode.directives
+                    }).map((x) => {
+                    return x.map(y => y.name && y.name.value)
+                    }).map((x) => x.map((y) => y == 'input').indexOf(true) > -1)
+
+                    return fieldDirectives.indexOf(true) > -1
+            })
+            
+            let inputFields = types.map((x) => {
+                return {
+                    name: `${x.name}Input`,
+                    fields: x.fields.filter((a) => a.astNode).map((x) => {
+                        return {
+                            name: x.name,
+                            type: x.type,
+                            directives: x.astNode.directives
+                        }
+                    }).filter((a) => a.directives.map((x) => x.name && x.name.value).indexOf('input') > -1)
                 }
             })
-            types.push(test)
 
-            let q = new GraphQLObjectType({
-                name: 'Query',
-                fields: {
-                    objects: {type: test}
-                }
-            })
-
+            let newTypes = inputFields.map(makeInput)
+   
+          
             let _schema = new GraphQLSchema({
-                types: types,
-                query: q
+                types: newTypes
             })
-
-            return mergeSchemas({schemas:[schema, _schema], resolvers: {Query: {objects: () => {console.log("Test")}}}})
-            /*return mapSchema(schema, {
-                [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
-                    const directives = getDirectives(schema, fieldConfig);
-
-                    console.log(fieldConfig.isInput, directives)
-                },
-                [MapperKind.OBJECT_TYPE]: (type) => {
-                    const directives = getDirectives(schema, type)
-                    console.log(directives)
-                }
-            })*/
+            
+            return mergeSchemas({schemas:[schema, _schema]})
         }
     }
 }
