@@ -24,11 +24,13 @@ const Flow = require('@workerhive/flow-provider')
 
 const typeDefs = `
     type Query {
-        //All extra queries can be defined here
+        //All extra queries can be defined here e.g.
+        getHashes: [Hash]
     }
 
     type Mutation{
-        //All extra mutations can be defined here
+        //All extra mutations can be defined here e.g.
+        hash(content: String): Hash
     }
 
     type SensitiveType @crud @configurable{
@@ -43,7 +45,20 @@ const typeDefs = `
         data: String
     }`
 
-let server = Flow(typeDefs)
+let resolvers = {
+    Query: {
+        getHashes: (parent, args, context) => {
+
+        }
+    },
+    Mutation: {
+        hash: (parent, {content}, context) => {
+            
+        }
+    }
+}
+
+let server = Flow(typeDefs, resolvers)
 
 server.listen({port: 4001}).then((conn) => {
     const {url} = conn;

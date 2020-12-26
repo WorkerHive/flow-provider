@@ -13,14 +13,14 @@ const CRUDTransform = require('./src/transforms/crud')
 const resolvers = require("./src/resolvers")
 
 
-const startFlow = (typeDefs) => {
+const startFlow = (typeDefs, userResolvers) => {
     const { inputTransformTypeDefs, inputTransformTransformer } = InputTransform()
     const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
     const { crudTypeDefs, crudTransformer } = CRUDTransform();
 
     const schema = makeExecutableSchema({
         typeDefs: [inputTransformTypeDefs, configurableTypeDefs, crudTypeDefs, typeDefs],
-        resolvers: resolvers(),
+        resolvers: [resolvers(), userResolvers],
         schemaTransforms: [ inputTransformTransformer, configurableTransformer, crudTransformer],
         schemaDirectives: {
             configurable: ConfigurableDirective,
@@ -52,55 +52,3 @@ const startFlow = (typeDefs) => {
 }
 
 module.exports = startFlow
-
-const typeDefs = `
-
-    type Query {
-        name: String
-    }
-
-    type Mutation {
-        setName: String
-    }
-    
-    type Project @crud @configurable{
-        id: ID
-        name: String @input
-        startDate: Int @input
-    }
-
-    type User @crud @configurable{
-        id: ID
-        name: String @input
-        email: String @input
-        username: String @input
-        password: Hash
-    }
-
-    type Equipment @crud @configurable{
-        id: ID
-        name: String @input
-        type: String @input
-        description: String @input
-    }
-
-    type File @configurable {
-        id: ID
-        filename: String
-        extension: String
-    }
-
-    type Hash {
-        algo: String
-        data: String
-    }
-
-`
-
-
-let server = startFlow(typeDefs)
-
-server.listen({port: 4001}).then((conn) => {
-    const {url} = conn;
-    console.log(`🚀 Server ready at ${url}`);
-})
