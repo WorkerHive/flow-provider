@@ -1,4 +1,4 @@
-# ![Workhub Logo](https://raw.githubusercontent.com/WorkerHive/flow-provider/master/logo.png) Workhub Flow Provider
+# ![Workhub Logo](https://raw.githubusercontent.com/WorkerHive/flow-provider/master/logo.png =150x) Workhub Flow Provider
 
 Connecting all the pipes together to make a big beautiful graph that can be searched with graphql
 
