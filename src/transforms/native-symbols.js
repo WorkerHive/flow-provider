@@ -1,11 +1,11 @@
-import {
+const {
     GraphQLBoolean, GraphQLDirective, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLNamedType, GraphQLString,
     specifiedDirectives
-} from 'graphql';
+} = require('graphql');
 
 const nativeTypes = [ GraphQLInt, GraphQLString, GraphQLBoolean, GraphQLFloat, GraphQLID ];
 
-const nativeTypeMap: {[name: string]: GraphQLNamedType} = {};
+const nativeTypeMap = {};
 for (const type of nativeTypes) {
     nativeTypeMap[type.name] = type;
 }
@@ -15,12 +15,12 @@ for (const type of nativeTypes) {
  * @param type a GraphQLType or a a type name
  * @returns true for native types, false for other types and for introspection types
  */
-export function isNativeGraphQLType(type: string|GraphQLNamedType) {
+function isNativeGraphQLType(type) {
     const name = typeof type === 'string' ? type : type.name;
     return name in nativeTypeMap;
 }
 
-const nativeDirectiveMap: {[name: string]: GraphQLDirective} = {};
+const nativeDirectiveMap = {};
 for (const directive of specifiedDirectives) {
     nativeDirectiveMap[directive.name]  = directive;
 }
@@ -35,7 +35,12 @@ for (const directive of specifiedDirectives) {
  * @param directive a GraphQLDirective or a a directive name
  * @returns true for native directives, false otherwise
  */
-export function isNativeDirective(directive: string|GraphQLDirective) {
+function isNativeDirective(directive) {
     const name = typeof directive === 'string' ? directive  : directive.name;
     return name in nativeDirectiveMap;
+}
+
+module.exports ={
+    isNativeDirective,
+    isNativeGraphQLType
 }

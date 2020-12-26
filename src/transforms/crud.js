@@ -4,6 +4,7 @@ const { isNativeGraphQLType } = require('./native-symbols')
 const { objectValues, compact } = require('./utils')
 const { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
 const { findTypesWithDirective } = require("../utils")
+const { camelCase } =  require("camel-case");
 
 let typeMap;
 
@@ -30,14 +31,14 @@ function crudTransformer (){
 
                 const objectName = dirs[i].name;
 
-                args[objectName.toLowerCase()] = {type: schema._typeMap[`${objectName}Input`]}
+                args[camelCase(objectName)] = {type: schema._typeMap[`${objectName}Input`]}
                 
                 const addTag = `add${objectName}`
                 const updateTag = `update${objectName}`
                 const deleteTag = `delete${objectName}`
 
-                const getAllTag = `${objectName.toLowerCase()}s`
-                const getTag = `${objectName.toLowerCase()}`;
+                const getAllTag = `${camelCase(objectName)}s`
+                const getTag = `${camelCase(objectName)}`;
 
                 mutationFields[addTag] = {
                     type: schema._typeMap[objectName],
@@ -73,7 +74,6 @@ function crudTransformer (){
 
                 Query[getAllTag] = async (parent, _args, context, info) => {
                     //Get all of item
-                    console.log("Get all", objectName, objectValues(info.fieldNodes[0].selectionSet)[1].map((x) => x.name.value))
                     return await context.connections.flow.getAll(objectName)
                 }
 
@@ -82,17 +82,18 @@ function crudTransformer (){
                     return await context.connections.flow.get(objectName, id);
                 }
             
-                Mutation[`add${objectName}`] = async (parent, args, context) => {
+                Mutation[addTag] = async (parent, args, context) => {
                     //Add one of item
-                    return await context.connections.flow.add(objectName, args[objectName.toLowerCase()])
+                    console.log(addTag, objectName)
+                    return await context.connections.flow.add(objectName, args[camelCase(objectName)])
                 }
 
-                Mutation[`update${objectName}`] = async (parent, args, context) => {
+                Mutation[updateTag] = async (parent, args, context) => {
                     //Update one of item
-                    return await context.connections.flow.put(objectName, args.id, args[objectName.toLowerCase()])
+                    return await context.connections.flow.put(objectName, args.id, args[camelCase(objectName)])
                 }
 
-                Mutation[`delete${objectName}`] = async (parent, args, context) => {
+                Mutation[deleteTag] = async (parent, args, context) => {
                     //Remove one of item
                     return await context.connections.flow.delete(objectName, args.id)
                 }

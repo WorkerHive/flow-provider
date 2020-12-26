@@ -10,10 +10,10 @@ Connecting all the pipes together to make a big beautiful graph that can be sear
 
 The following snippet generates an apollo-server configured with a SensitiveType and a Hash no resolvers are set up for the hash but the SensitiveType will now have resolvers for 
 
-- sensitivetypes: [SensitiveType]
-- sensitivetype(id: ID): SensitiveType
-- addSensitiveType(sensitivetype: SensitiveTypeInput) : SensitiveType
-- updateSensitiveType(id: ID, sensitivetype: SensitiveTypeInput) : SensitiveType
+- sensitiveTypes: [SensitiveType]
+- sensitiveType(id: ID): SensitiveType
+- addSensitiveType(sensitiveType: SensitiveTypeInput) : SensitiveType
+- updateSensitiveType(id: ID, sensitiveType: SensitiveTypeInput) : SensitiveType
 - deleteSensitiveType(id: ID): Boolean
 
 these will be routed by default to the app store provided, if the configurable directive has been set the user can choose which store they would like to use
@@ -53,7 +53,7 @@ let resolvers = {
     },
     Mutation: {
         hash: (parent, {content}, context) => {
-            
+
         }
     }
 }
