@@ -16,6 +16,8 @@ const InputTransform = require('./src/transforms/input')
 const ConfigurableTransform = require('./src/transforms/configurable')
 const CRUDTransform = require('./src/transforms/crud')
 
+const StoreManager = require('./src/stores')
+
 const resolvers = require("./src/resolvers");
 const FlowPath = require('./src/flow-path');
 const configurableTransformer = require('./src/transforms/configurable');
@@ -26,7 +28,8 @@ const { MergedAdapter } = require('./src/adapters');
 class FlowProvider{
 
     constructor(typeDefs, flowDefs, userResolvers){
-        this.stores = {};
+        this.stores = new StoreManager();
+        
         this.typeDefs = typeDefs;
         this.flowDefs = flowDefs;
         this.userResolvers = userResolvers;
@@ -36,30 +39,6 @@ class FlowProvider{
         this.setupServer();
     }
 
-    initializeAppStore(opts){
-        if(opts.store){
-            this.store = {
-                    store: opts.store,
-                    type: opts.storeType,
-                };
-        }else{
-            this.store = {
-                store: new MongoStore(opts),
-                type: "mongodb"
-            }
-        }
-    }
-
-    registerStore(storeKey, storeType, store){
-        if(this.stores[storeKey]){
-            return;
-        }
-
-        this.stores[storeKey] = {
-            type: storeType,
-            store: store
-        }
-    }
 
     setupServer(){
         const { inputTransformTypeDefs, inputTransformTransformer } = InputTransform()
@@ -98,9 +77,9 @@ class FlowProvider{
 
                             let batches = path.getBatched();
 
-                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.store, this.stores, batches)
-
-                            return await adapter.addProvider()(object)                            
+                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches)
+                            let result =  await adapter.addProvider()(object)                            
+                            return result;
                         },
                         put: (type, id, object) => {
                             let flowDef = this.flowDefs[type];
@@ -125,13 +104,10 @@ class FlowProvider{
                             
                             let batches = path.getBatched();
 
-                            let actions = [];
-
-                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.store, this.stores, batches);
-
+                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches);
 
                             const result= await adapter.getAllProvider();
-                            console.log("RES", result);
+                            console.log(result)
                             return result;
                         },
                     }

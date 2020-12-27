@@ -33,18 +33,12 @@ const objectFlip = (obj) => {
 
     let fields = objectValues(typeDef._fields).map((x) => ({name: x.name, type: x.type}))
 
-    let idKey = fields.filter((a) => a.type =="ID")[0].name;
-
-    console.log(idKey, out, spec, objectFlip(spec))
-    if(!spec[idKey]) out[idKey] = idKey;
-
 
     for(var k in spec){
         out[spec[k]] = obj[k];
     }
 
-    console.log('=> Forward mapping', out)
-    return {idKey, obj: out};
+    return out
 }
 
  const mapBack = (spec, obj) => {

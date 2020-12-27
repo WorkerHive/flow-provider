@@ -2,6 +2,7 @@ const {MongoClient} = require('mongodb')
 const BaseStore = require('./base')
 
 class MongoStore extends BaseStore {
+    
     constructor(config){
         super(config)
         MongoClient.connect(config.url).then((client) => {
@@ -11,6 +12,8 @@ class MongoStore extends BaseStore {
         
     }
 }
+
+MongoStore.type = "mongodb";
 
 module.exports = MongoStore;
 

@@ -9,7 +9,7 @@ const typeDefs = `
         name: String @input 
         description: String @input 
         applicationField: [Hash] 
-        unaccountedField: String
+        unaccountedField: String @input
         upsetField: [String]
     }
 
@@ -27,14 +27,18 @@ const typeDefs = `
 
 let flowDefs = {
     MergedType: {
-        id: "jsis:MergedTypes:JobID",
+        id: "jsis:MergedTypes:_id",
         name: "jsis:MergedTypes:JobName",
-        description: "app:MergedType:description",
-        applicationField: "app:MergedType:applicationField"
+        refs: {
+            "id": ["app:MergedType:_id"],
+        }
     },
     SensitiveType: {
         name: "jsis:Sensitive:key",
-        sensitiveKey: "app:Sensitive:key"
+        sensitiveKey: "app:Sensitive:key",
+        refs: {
+            "id": ["app:Sensitive:_id", "jsis:Sensitive:_id"],
+        }
     }
 }
 
@@ -44,11 +48,11 @@ let resolvers = {
 
 let server = new FlowProvider(typeDefs, flowDefs, resolvers)
 
-server.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
+server.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
 
-server.registerStore('jsis', 'mongodb', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
+server.stores.registerStore('jsis', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
 
-server.startServer(4001).then((conn) => {
+server.startServer(4002).then((conn) => {
     const {url} = conn;
     console.log(`🚀 Server ready at ${url}`);
 })

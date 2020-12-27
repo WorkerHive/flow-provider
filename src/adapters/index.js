@@ -3,57 +3,207 @@ const MSSQLAdapter = require('../adapters/mssql');
 const { objectValues } = require('../transforms/utils');
 const { objectFlip } = require('../utils/flow-query');
 const BaseAdapter = require('./base-adapter');
+const { merge, unionWith } = require('lodash')
 
 class MergedAdapter extends BaseAdapter{
-    constructor(type, appStore, storeList, paths){
+    constructor(type, storeList, paths){
         super();
         this.type = type
-        this.appStore = appStore;
         this.storeList = storeList;
         this.paths = paths;
-
-        
-        
     }
 
 
     mergeActions(bucket, type, get_provider){
         let actions = [];
         for(var k in this.paths){
-            if(k !== "app"){
-                let pipe = new MongoAdapter(this.storeList[k].store.db)
-                for(var col in this.paths[k]){
-                    let provider = get_provider(pipe, col, this.type, objectFlip(this.paths[k][col]))
-                    actions.push(provider)
+                if(k !== 'refs'){
+                    let pipe = new MongoAdapter(this.storeList.getStore(k).db)
+                    for(var col in this.paths[k]){
+                        let provider = get_provider(pipe, col, this.type, objectFlip(this.paths[k][col]))
+                        actions.push(provider)
+                    }
                 }
-            }
+        
         }
 
-        let adapter = new MongoAdapter(this.appStore.store.db)
-        let func = get_provider(adapter, type, type, objectFlip(this.paths["app"][type]))
-        actions.push(func)
         return actions;
     }
 
+    sortActions(type){
+        let refs = this.paths.refs;
+        let paths = Object.assign({}, this.paths)
+        delete paths.refs;
+
+        let primaryActions = [];
+        let supportingActions = [];
+
+        for(var store in paths){
+            for(var path in paths[store]){
+                let map = objectFlip(Object.assign({}, paths[store][path]))
+
+                let refKey = Object.keys(refs).map((x) => {
+                    return Object.keys(map).indexOf(x)
+                }).filter((a) => a > -1).length > 0
+
+                if(refKey){
+                    primaryActions.push({
+                        [store]: {
+                            [path]: paths[store][path]
+                        }
+                    })
+                }else{
+                    supportingActions.push({
+                        [store]: {
+                            [path]: paths[store][path]
+                        }
+                    })
+                }
+                
+            }
+        }
+
+        return {primaryActions, supportingActions}
+        
+    }
+
     getAllProvider(){
-        let actions = this.mergeActions(this.bucket, this.type, (adapter, bucket, type, paths) => {
-            return adapter.getAllProvider({name: bucket || type}, type, paths)
-        });
-        return Promise.all(actions.map((x) => x()))
+        const { primaryActions, supportingActions } = this.sortActions(this.type);
+
+        const { refs } = this.paths;
+
+        let actions = [];
+        let supporting = [];
+
+        primaryActions.forEach((action) => {
+            for(var store in action){
+                for(var path in action[store]){
+                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+                    let getAll = adapter.getAllProvider({name: path}, this.type, action[store][path])
+                    actions.push(getAll)
+                }
+            }
+        })
+
+        supportingActions.forEach((action) => {
+            for(var store in action){
+                for(var path in action[store]){
+                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+
+                    let hasRef = false;
+                    let _refs = {};
+
+                    for(var k in refs){
+                        let indx = refs[k].map((x) => x.split(':').slice(0,2).join(':')).indexOf(`${store}:${path}`)
+                        if(indx > -1){
+                            _refs[refs[k][indx].split(':')[2]] = k
+                        }
+                    }
+
+                     merge(_refs, action[store][path])
+
+            
+                    let add = adapter.getAllProvider({name: path}, this.type, _refs)
+                    supporting.push(add)
+                }
+            }
+        })
+
+        return Promise.all(actions.map((x) => x())).then((result) => {
+            let r  = result[0];
+
+            return Promise.all(supporting.map((action) => action())).then((results) => {
+                let r2 = results[0];
+
+                return unionWith(r, r2, (arrVal, othVal) => {
+                    if(`${arrVal.id}` == `${othVal.id}`){
+                        console.log("UNION", arrVal, othVal)
+
+                        return merge(othVal, arrVal);
+                    }else{
+                        return false;
+                    }
+                })
+
+                return results
+            })
+        })
     }
 
     //Merged addProvider, batches requests to the appropriate adapter path and creates a cross ref
     addProvider(){
-        let actions = this.mergeActions(this.bucket, this.type, (adapter, bucket, type, paths) => {
-            //Do whatever logic and return an addProvider here
-            let fields = objectValues(type.getFields())
-            let idKey = fields.filter(a => a.type == "ID")[0]
-            console.log(paths[idKey.name])
-            return adapter.addProvider({name: bucket || type}, type, paths)
+        const { primaryActions, supportingActions } = this.sortActions(this.type)
+
+        const { refs } = this.paths;
+
+        console.log(primaryActions, supportingActions)
+
+        let actions = [];
+        let supporting = [];
+
+        primaryActions.forEach((action) => {
+            for(var store in action){
+                for(var path in action[store]){
+                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+                    console.log(`=> Add Provider ${path} ${this.type} ${JSON.stringify(action[store][path])}`)
+                    let add = adapter.addProvider({name: path}, this.type, action[store][path])
+                    actions.push(add);
+                }
+            }
         })
+        
+        supportingActions.forEach((action) => {
+            for(var store in action){
+                for(var path in action[store]){
+                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+                    console.log(`=> Supporting Add Provider ${path} ${this.type} ${JSON.stringify(action[store][path])}`)
+
+                    let hasRef = false;
+                    let _refs = {};
+
+                    for(var k in refs){
+                        let indx = refs[k].map((x) => x.split(':').slice(0,2).join(':')).indexOf(`${store}:${path}`)
+                        if(indx > -1){
+                            _refs[refs[k][indx].split(':')[2]] = k
+                        }
+                    }
+
+                     merge(_refs, action[store][path])
+
+            
+                    let add = adapter.addProvider({name: path}, this.type, _refs)
+                    supporting.push(add)
+                }
+            }
+        })
+
         return (object) => {
-            return Promise.all(actions.map((x) => x(object)))
+            return Promise.all(actions.map((x) => x(object))).then((result) => {
+                let resultObj = {...object};
+                result.forEach(item => {
+                    for(var k in item){
+                        resultObj[k] = item[k]
+                    }
+                })
+
+
+                return Promise.all(supporting.map((action) => {
+                    return action(resultObj)
+                })).then((results) => {
+                    let finalResult = {...resultObj}
+                    results.forEach(item => {
+                        for(var k in item){
+                            finalResult[k] = item[k]
+                        }
+                    })
+
+                    console.log("FINAL RESULT", finalResult)
+                    return finalResult
+                })
+
+            })
         }
+
     }
 
 }

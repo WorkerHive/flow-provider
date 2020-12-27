@@ -33,6 +33,13 @@ const typeDefs = `
         hash(content: String): Hash
     }
 
+    type MergedType @crud @configurable{
+        id: ID
+        name: String @input
+        description: String @input
+        applicationField: String
+    }
+
     type SensitiveType @crud @configurable{
         id: ID
         name: String @input
@@ -44,6 +51,25 @@ const typeDefs = `
         algo: String
         data: String
     }`
+
+let flowDefs = {
+    MergedType: {
+        id: "app:MergedTypes:_id",
+        name: "app:MergedTypes:JobName",
+        description: "app:MergedType:description",
+        applicationField: "app:MergedType:applicationField",
+        refs: {
+            "id": ["app:MergedType:_id"],
+        }
+    },
+    SensitiveType: {
+        name: "app:Sensitive:name",
+        sensitiveKey: "app:Sensitive:key",
+        refs: {
+            "id": ["app:Sensitive:_id"],
+        }
+    }
+}
 
 let resolvers = {
     Query: {
@@ -58,7 +84,7 @@ let resolvers = {
     }
 }
 
-let server = Flow(typeDefs, resolvers)
+let server = Flow(typeDefs, flowDefs, resolvers)
 
 server.listen({port: 4001}).then((conn) => {
     const {url} = conn;

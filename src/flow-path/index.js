@@ -28,7 +28,7 @@ class FlowPath{
     }
 
     getBatched(){
-
+        console.log(this.flow, this.provides)
         let paths = objectValues(this.flow).map((x) => x.split(':'))
 
         let accumulator = {};
@@ -39,6 +39,9 @@ class FlowPath{
             accumulator[current[0]][current[1]][current[2]] = this.flipped[current.join(':')]
             
         })
+
+        accumulator['refs'] = this.provides['refs']
+        console.log(accumulator)
         return accumulator;
     }
 

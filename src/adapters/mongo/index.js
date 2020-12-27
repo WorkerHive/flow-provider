@@ -17,9 +17,8 @@ class MongoAdapter extends BaseAdapter{
 
     getAllProvider(bucket, typeDef, provides){
         return async () => {
-            console.log(bucket.name)
             let results = await this.client.collection(`${bucket.name}`).find().toArray()
-            return results.map((x) => mapBack(provides, x));
+            return results.map((x) => mapForward(typeDef, provides, x));
         }
     }
 
@@ -37,12 +36,10 @@ class MongoAdapter extends BaseAdapter{
 
     addProvider(bucket, typeDef, provides){
         return async(newObject) => {
-            const id = new ObjectId()
-            let {idKey, obj} = mapForward(typeDef, provides, newObject)
-            console.log(idKey, obj)
-            obj[idKey] = id
-            console.log(provides)
-            this.client.collection(`${bucket.name}`).insertOne(obj)
+            let  obj = mapBack(provides, newObject)
+            console.log("New object add provider", obj, provides, newObject)
+            let newObj = await this.client.collection(`${bucket.name}`).insertOne(obj)
+            return mapForward(typeDef, provides, newObj.ops[0])
         }
     }
 }
