@@ -23,16 +23,6 @@ these will be routed by default to the app store provided, if the configurable d
 const Flow = require('@workerhive/flow-provider')
 
 const typeDefs = `
-    type Query {
-        //All extra queries can be defined here e.g.
-        getHashes: [Hash]
-    }
-
-    type Mutation{
-        //All extra mutations can be defined here e.g.
-        hash(content: String): Hash
-    }
-
     type MergedType @crud @configurable{
         id: ID
         name: String @input
@@ -46,11 +36,7 @@ const typeDefs = `
         description: String @input
         sensitiveKey: Int
     }
-
-    type Hash {
-        algo: String
-        data: String
-    }`
+`
 
 let flowDefs = {
     MergedType: {
@@ -72,16 +58,7 @@ let flowDefs = {
 }
 
 let resolvers = {
-    Query: {
-        getHashes: (parent, args, context) => {
 
-        }
-    },
-    Mutation: {
-        hash: (parent, {content}, context) => {
-
-        }
-    }
 }
 
 let server = Flow(typeDefs, flowDefs, resolvers)
