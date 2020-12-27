@@ -7,6 +7,7 @@ const typeDefs = `
     type MergedType @crud @configurable {
         id: ID
         name: String @input 
+        weirdField: String @input
         description: String @input 
         applicationField: [Hash] 
         unaccountedField: String @input
@@ -29,8 +30,10 @@ let flowDefs = {
     MergedType: {
         id: "jsis:MergedTypes:_id",
         name: "jsis:MergedTypes:JobName",
+        weirdField: "jam:Max:field",
         refs: {
             "id": ["app:MergedType:_id"],
+            "name": ["jam:Max:name"]
         }
     },
     SensitiveType: {
@@ -51,6 +54,7 @@ let server = new FlowProvider(typeDefs, flowDefs, resolvers)
 server.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
 
 server.stores.registerStore('jsis', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
+server.stores.registerStore('jam', new MongoStore({url: 'mongodb://localhost', dbName: 'jam-jar'}))
 
 server.startServer(4002).then((conn) => {
     const {url} = conn;

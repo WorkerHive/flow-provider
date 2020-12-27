@@ -4,7 +4,7 @@ const MSSQLAdapter = require('../adapters/mssql');
 const { objectValues } = require('../transforms/utils');
 const { objectFlip } = require('../utils/flow-query');
 const BaseAdapter = require('./base-adapter');
-const { merge, unionWith } = require('lodash')
+const { merge, isEqual, unionWith } = require('lodash')
 
 class MergedAdapter extends BaseAdapter{
     constructor(type, storeList, paths){
@@ -139,58 +139,35 @@ class MergedAdapter extends BaseAdapter{
 
         const { refs } = this.paths;
 
-        let actions = [];
-        let supporting = [];
-
-        primaryActions.forEach((action) => {
-            for(var store in action){
-                for(var path in action[store]){
-                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
-                    let getAll = adapter.getAllProvider({name: path}, this.type, action[store][path])
-                    actions.push(getAll)
-                }
-            }
-        })
-
-        supportingActions.forEach((action) => {
-            for(var store in action){
-                for(var path in action[store]){
-                    let adapter = new MongoAdapter(this.storeList.getStore(store).db)
-
-                    let hasRef = false;
-                    let _refs = {};
-
-                    for(var k in refs){
-                        let indx = refs[k].map((x) => x.split(':').slice(0,2).join(':')).indexOf(`${store}:${path}`)
-                        if(indx > -1){
-                            _refs[refs[k][indx].split(':')[2]] = k
-                        }
-                    }
-
-                     merge(_refs, action[store][path])
-
-            
-                    let add = adapter.getAllProvider({name: path}, this.type, _refs)
-                    supporting.push(add)
-                }
-            }
+        const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
+            return adapter.getAllProvider({name: bucket}, this.type, provides)
         })
 
         return Promise.all(actions.map((x) => x())).then((result) => {
-            let r  = result[0];
+            let r  = result;
 
             return Promise.all(supporting.map((action) => action())).then((results) => {
-                let r2 = results[0];
-
+            
+                let r2 = results;
+                console.log(r, r2, refs)
                 return unionWith(r, r2, (arrVal, othVal) => {
+                    for(var k in refs){
+                        console.log("Checking ref", k)
+                        if(isEqual(arrVal[k], othVal[k])){
+                            console.log("Checked")
+                            return merge(othVal, arrVal)
+                        }
+                    }
+                    return othVal;
+                    /*
                     if(`${arrVal.id}` == `${othVal.id}`){
                         console.log("UNION", arrVal, othVal)
 
                         return merge(othVal, arrVal);
                     }else{
                         return false;
-                    }
-                })
+                    }*/
+                })[0]
 
                 return results
             })
