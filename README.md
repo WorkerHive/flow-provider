@@ -91,3 +91,36 @@ server.listen({port: 4001}).then((conn) => {
     console.log(`🚀 Server ready at ${url}`);
 })
 ```
+
+## Type Definitions
+
+Type definitions follow normal GraphQL syntax with the addition of a few directives baked into the flow-provider
+
+### @crud
+
+The crud directive informs the flow provider to set up routes for CRUD operations following the naming convention $operation$TypeName and to setup input types based on the keys in the type with the @input directive
+
+### @configurable
+
+Lets the flow provider know it should allow these types to be configured by flow definitions
+
+### @input
+
+Signals relevant fields to be used for input type setup
+
+## Flow Definitions
+
+Flow definitions are a JSON description of where a model is storing key values and how it should go about retrieving them 
+
+Example 
+
+```
+{
+    $TypeName: {
+        $modelKey: "$store:$pathway:$key",
+        $otherKey: "$otherstore:$pathway:$key2"
+    }
+}
+
+```
+
