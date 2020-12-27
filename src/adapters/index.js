@@ -1,5 +1,6 @@
 const MongoAdapter = require('../adapters/mongo')
 const MSSQLAdapter = require('../adapters/mssql');
+
 const { objectValues } = require('../transforms/utils');
 const { objectFlip } = require('../utils/flow-query');
 const BaseAdapter = require('./base-adapter');
@@ -65,6 +66,72 @@ class MergedAdapter extends BaseAdapter{
 
         return {primaryActions, supportingActions}
         
+    }
+
+    iteratePaths(arr, iteree){
+        arr.forEach(action => {
+            for(var store in action){
+                for(var path in action[store]){
+                    iteree(store, path, action)
+                }
+            }
+        })
+    }
+
+    doActions(get_func){
+        const { primaryActions, supportingActions } = this.sortActions(this.type);
+        const { refs } = this.paths;
+
+        let actions = [];
+        let supporting = [];
+
+        this.iteratePaths(primaryActions, (store, path, action) => {
+            let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+            let func = get_func(adapter, path, action[store][path])
+            actions.push(func)
+        })
+
+        this.iteratePaths(supportingActions, (store, path, action) => {
+            let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+
+            let _refs = {};
+            for(var k in refs){
+                let indx = refs[k].map((x) => x.split(':').slice(0,2).join(':')).indexOf(`${store}:${path}`)
+                if(indx > -1){
+                    _refs[refs[k][indx].split(':')[2]] = k
+                }
+            }
+
+            merge(_refs, action[store][path])
+
+            let func = get_func(adapter, path, _refs)
+            supporting.push(func)
+        })
+    
+        return {actions, supporting}
+    }
+
+    getProvider(){
+
+        const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
+            return adapter.getProvider({name: bucket}, this.type, provides)
+        })
+
+        return (id) => {
+            return Promise.all(actions.map((x) => x({id: id}))).then((results) => {
+                let r = {}
+                results.forEach(item => {
+                    merge(r, item)
+                })
+                return Promise.all(supporting.map((action) => action({id: id}))).then((endResult) => {
+                        endResult.forEach(it => {
+                        merge(r, it)
+                    })
+                    return r;
+                })
+
+            })
+        }
     }
 
     getAllProvider(){

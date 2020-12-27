@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const { mapForward, mapBack } = require("../../utils/flow-query");
+const {  objectFlip, mapForward, mapBack, mapQuery } = require("../../utils/flow-query");
 const BaseAdapter = require("../base-adapter");
 
 class MongoAdapter extends BaseAdapter{
@@ -11,7 +11,13 @@ class MongoAdapter extends BaseAdapter{
 
     getProvider(bucket, typeDef, provides){
         return async (search) => {
-            this.client.collection(`${bucket.name}`).findOne(search)
+            for(var k in search){
+                search[k] = ObjectId(search[k])
+            }
+            let query = mapQuery(objectFlip(provides), search)
+            console.log(query)
+            let result = await this.client.collection(`${bucket.name}`).findOne(query)
+            return mapForward(typeDef, provides, result)
         }
     }
 

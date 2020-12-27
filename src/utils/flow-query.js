@@ -21,6 +21,7 @@ const objectFlip = (obj) => {
   }
 
   const mapQuery = (spec, query) => {
+      console.log(spec, query)
     let out = {}
     for(var k in query){
         out[spec[k]] = query[k]

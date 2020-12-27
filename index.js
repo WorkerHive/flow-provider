@@ -94,9 +94,18 @@ class FlowProvider{
                             let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
 
                         },
-                        get: (type, id) => {
+                        get: async (type, id) => {
                             let flowDef = this.flowDefs[type];
                             let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
+
+                            let batches = path.getBatched();
+
+                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches);
+
+                            const result = adapter.getProvider();
+                            const rt = await result(id)
+                            console.log(rt)
+                            return rt;
                         },
                         getAll: async (type) => {
                             let flowDef = this.flowDefs[type];
