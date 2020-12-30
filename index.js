@@ -65,6 +65,7 @@ class FlowProvider{
     }
 
     applyInit(fn){
+        this.connector = new FlowConnector(this.schema, this.flowDefs, this.stores);
         this.server = fn({
             schema: this.schema,
             schemaDirectives: {
@@ -74,7 +75,7 @@ class FlowProvider{
             },
             context: {
                 connections: {
-                    flow: new FlowConnector(this.schema, this.flowDefs, this.stores)
+                    flow: this.connector
                 }
             }
         })
