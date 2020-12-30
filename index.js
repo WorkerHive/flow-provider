@@ -20,6 +20,7 @@ const StoreManager = require('./src/stores')
 
 const resolvers = require("./src/resolvers");
 const FlowPath = require('./src/flow-path');
+const FlowConnector = require('./src/connectors/flow');
 const configurableTransformer = require('./src/transforms/configurable');
 const crudTransformer = require('./src/transforms/crud');
 const { MergedAdapter } = require('./src/adapters');
@@ -27,7 +28,7 @@ const { MergedAdapter } = require('./src/adapters');
 
 class FlowProvider{
 
-    constructor(typeDefs, flowDefs, userResolvers){
+    constructor(typeDefs, flowDefs, userResolvers, ){
         this.stores = new StoreManager();
         
         this.typeDefs = typeDefs;
@@ -60,7 +61,11 @@ class FlowProvider{
                 crud: CRUDDirective
             }
         })
-        this.server = new ApolloServer({
+
+    }
+
+    applyInit(fn){
+        this.server = fn({
             schema: this.schema,
             schemaDirectives: {
                 configurable: ConfigurableDirective,
@@ -69,64 +74,10 @@ class FlowProvider{
             },
             context: {
                 connections: {
-                    flow: {
-                        add: async (type, object) => {
-                            let flowDef = this.flowDefs[type];
-                            
-                            let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
-
-                            let batches = path.getBatched();
-
-                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches)
-                            let result =  await adapter.addProvider()(object)                            
-                            return result;
-                        },
-                        put: (type, id, object) => {
-                            let flowDef = this.flowDefs[type];
-                            let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
-
-                            let sql = new MSSQLAdapter();
-                            let update = sql.updateProvider({name: type}, this.server.schema._typeMap[type], flowDef)
-                            let r = update(id, object)
-                        },
-                        delete: (type, id) => {
-                            let flowDef = this.flowDefs[type];
-                            let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
-
-                        },
-                        get: async (type, id) => {
-                            let flowDef = this.flowDefs[type];
-                            let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
-
-                            let batches = path.getBatched();
-
-                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches);
-
-                            const result = adapter.getProvider();
-                            const rt = await result(id)
-                            console.log(rt)
-                            return rt;
-                        },
-                        getAll: async (type) => {
-                            let flowDef = this.flowDefs[type];
-                            let path = new FlowPath(this.server.schema._typeMap[type], flowDef)
-                            
-                            let batches = path.getBatched();
-
-                            let adapter = new MergedAdapter(this.server.schema._typeMap[type], this.stores, batches);
-
-                            const result= await adapter.getAllProvider();
-                            console.log(result)
-                            return result;
-                        },
-                    }
+                    flow: new FlowConnector(this.schema, this.flowDefs, this.stores)
                 }
             }
         })
-    }
-
-    startServer(port){
-        return this.server.listen({port: port})
     }
 
 }

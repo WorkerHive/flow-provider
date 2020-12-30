@@ -1,4 +1,6 @@
 
+const { ApolloServer } = require('apollo-server')
+const { flow } = require('lodash')
 const { FlowFlags } = require('typescript')
 const {FlowProvider, MongoStore} = require('..')
 
@@ -49,14 +51,18 @@ let resolvers = {
 
 }
 
-let server = new FlowProvider(typeDefs, flowDefs, resolvers)
+let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
 
-server.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
+flowProvider.applyInit((opts) => {
+    return new ApolloServer(opts)
+})
 
-server.stores.registerStore('jsis', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
-server.stores.registerStore('jam', new MongoStore({url: 'mongodb://localhost', dbName: 'jam-jar'}))
+flowProvider.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
 
-server.startServer(4002).then((conn) => {
+flowProvider.stores.registerStore('jsis', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
+flowProvider.stores.registerStore('jam', new MongoStore({url: 'mongodb://localhost', dbName: 'jam-jar'}))
+
+flowProvider.server.listen(4002).then((conn) => {
     const {url} = conn;
     console.log(`🚀 Server ready at ${url}`);
 })
