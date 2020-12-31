@@ -118,6 +118,8 @@ class MergedAdapter extends BaseAdapter{
         })
 
         return (query) => {
+
+            console.log("Querying ", this.type, query)
             return Promise.all(actions.map((x) => x(query))).then((results) => {
                 let r = {}
                 results.forEach(item => {
