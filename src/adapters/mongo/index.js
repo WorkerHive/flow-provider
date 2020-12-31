@@ -11,9 +11,8 @@ class MongoAdapter extends BaseAdapter{
 
     getProvider(bucket, typeDef, provides){
         return async (search) => {
-            console.log(typeDef._fields.map((x) => x.type))
             for(var k in search){
-                search[k] = (typeDef._fields[k].type.name.value == "ID") ?  ObjectId(search[k]) : search[k];
+                search[k] = (typeDef._fields[k].type == "ID") ?  ObjectId(search[k]) : search[k];
             }
             let query = mapQuery(objectFlip(provides), search)
             console.log(query)
