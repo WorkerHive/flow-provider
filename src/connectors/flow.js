@@ -44,9 +44,8 @@ class FlowConnector{
         let batches = path.getBatched();
         console.log("Get with", type, query)
         let adapter = new MergedAdapter(this.typeMap[type], this.stores, batches)
-        let result = await adapter.getProvider()(query)
-        console.log("RESULT", result)
-        return result;
+        let fn = adapter.getProvider()
+        return await fn(query)
     }
 
     async getAll(type){

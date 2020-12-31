@@ -117,6 +117,7 @@ class MergedAdapter extends BaseAdapter{
             return adapter.getProvider({name: bucket}, this.type, provides)
         })
 
+        console.log(actions.length, supporting.length)
         return (query) => {
 
             console.log("Querying ", this.type, query)
@@ -125,12 +126,16 @@ class MergedAdapter extends BaseAdapter{
                 results.forEach(item => {
                     merge(r, item)
                 })
-                return Promise.all(supporting.map((action) => action(query))).then((endResult) => {
-                        endResult.forEach(it => {
-                        merge(r, it)
+                if(supporting.length > 0){
+                    return Promise.all(supporting.map((action) => action(query))).then((endResult) => {
+                            endResult.forEach(it => {
+                            merge(r, it)
+                        })
+                        return r;
                     })
+                }else{
                     return r;
-                })
+                }
 
             })
         }
