@@ -150,35 +150,37 @@ class MergedAdapter extends BaseAdapter{
             return adapter.getAllProvider({name: bucket}, this.type, provides)
         })
 
-        return Promise.all(actions.map((x) => x())).then((result) => {
-            let r  = result;
+        return () => {
+            return Promise.all(actions.map((x) => x())).then((result) => {
+                let r  = result;
 
-            return Promise.all(supporting.map((action) => action())).then((results) => {
-            
-                let r2 = results;
-                console.log(r, r2, refs)
-                return unionWith(r, r2, (arrVal, othVal) => {
-                    for(var k in refs){
-                        console.log("Checking ref", k)
-                        if(isEqual(arrVal[k], othVal[k])){
-                            console.log("Checked")
-                            return merge(othVal, arrVal)
+                return Promise.all(supporting.map((action) => action())).then((results) => {
+                
+                    let r2 = results;
+                    console.log(r, r2, refs)
+                    return unionWith(r, r2, (arrVal, othVal) => {
+                        for(var k in refs){
+                            console.log("Checking ref", k)
+                            if(isEqual(arrVal[k], othVal[k])){
+                                console.log("Checked")
+                                return merge(othVal, arrVal)
+                            }
                         }
-                    }
-                    return othVal;
-                    /*
-                    if(`${arrVal.id}` == `${othVal.id}`){
-                        console.log("UNION", arrVal, othVal)
+                        return othVal;
+                        /*
+                        if(`${arrVal.id}` == `${othVal.id}`){
+                            console.log("UNION", arrVal, othVal)
 
-                        return merge(othVal, arrVal);
-                    }else{
-                        return false;
-                    }*/
-                })[0]
+                            return merge(othVal, arrVal);
+                        }else{
+                            return false;
+                        }*/
+                    })[0]
 
-                return results
+                    return results
+                })
             })
-        })
+        }  
     }
 
     //Merged addProvider, batches requests to the appropriate adapter path and creates a cross ref
