@@ -79,7 +79,7 @@ function crudTransformer (){
 
                 Query[getTag] = async (parent, {id}, context, info) => {
                     //Get one of item
-                    return await context.connections.flow.get(objectName, id);
+                    return await context.connections.flow.get(objectName, {id: id});
                 }
             
                 Mutation[addTag] = async (parent, args, context) => {
@@ -90,12 +90,12 @@ function crudTransformer (){
 
                 Mutation[updateTag] = async (parent, args, context) => {
                     //Update one of item
-                    return await context.connections.flow.put(objectName, args.id, args[camelCase(objectName)])
+                    return await context.connections.flow.put(objectName, {id: args.id}, args[camelCase(objectName)])
                 }
 
                 Mutation[deleteTag] = async (parent, args, context) => {
                     //Remove one of item
-                    return await context.connections.flow.delete(objectName, args.id)
+                    return await context.connections.flow.delete(objectName, {id: args.id})
                 }
             }
 

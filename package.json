@@ -1,6 +1,6 @@
 {
   "name": "@workerhive/flow-provider",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "main": "index.js",
   "repository": "git@github.com:WorkerHive/flow-provider.git",
   "author": "Ross Leitch <professional.balbatross@gmail.com>",
