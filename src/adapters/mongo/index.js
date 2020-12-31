@@ -29,8 +29,14 @@ class MongoAdapter extends BaseAdapter{
     }
 
     updateProvider(bucket, typeDef, provides){
-        return async(id, obj) => {
-            this.client.collection(`${bucket.name}`).updateOne({}, obj)
+        return async(query, obj) => {
+            for(var k in query){
+                query[k] = (typeDef._fields[k].type == "ID") ? ObjectId(query[k]) : query[k]
+            }
+
+            let q = mapQuery(objectFlip(provides), query)
+            let inputObject = mapBack(provides, obj)
+            return await this.client.collection(`${bucket.name}`).updateOne(q, inputObject)
         }
     }
 

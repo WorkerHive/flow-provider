@@ -142,8 +142,6 @@ class MergedAdapter extends BaseAdapter{
     }
 
     getAllProvider(){
-        const { primaryActions, supportingActions } = this.sortActions(this.type);
-
         const { refs } = this.paths;
 
         const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
@@ -182,6 +180,24 @@ class MergedAdapter extends BaseAdapter{
             })
         }  
     }
+
+    updateProvider(){
+        const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
+            return adapter.updateProvider({name:bucket}, this.type, provides);
+        })
+
+        return (id, update) => {
+            return Promise.all(actions.map((action) => {
+                return action(id, update)
+            })).then((result) => {
+                return Promise.all(supporting.map((sAction) => {
+                    return sAction(id, update)
+                }))
+            })
+        }
+        
+    }
+
 
     //Merged addProvider, batches requests to the appropriate adapter path and creates a cross ref
     addProvider(){

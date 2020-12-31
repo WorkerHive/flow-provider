@@ -24,7 +24,7 @@ class FlowConnector{
         let path = new FlowPath(this.typeMap[type], flowDef)
         let batches = path.getBatched();
         let adapter = new MergedAdapter(this.typeMap[type], this.stores, batches)
-        let result = await adapter.putProvider()(id, update)
+        let result = await adapter.updateProvider()(id, update)
         return result;
 
     }
