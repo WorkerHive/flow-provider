@@ -117,13 +117,13 @@ class MergedAdapter extends BaseAdapter{
             return adapter.getProvider({name: bucket}, this.type, provides)
         })
 
-        return (id) => {
-            return Promise.all(actions.map((x) => x({id: id}))).then((results) => {
+        return (query) => {
+            return Promise.all(actions.map((x) => x(query))).then((results) => {
                 let r = {}
                 results.forEach(item => {
                     merge(r, item)
                 })
-                return Promise.all(supporting.map((action) => action({id: id}))).then((endResult) => {
+                return Promise.all(supporting.map((action) => action(query))).then((endResult) => {
                         endResult.forEach(it => {
                         merge(r, it)
                     })
