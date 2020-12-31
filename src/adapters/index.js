@@ -117,7 +117,7 @@ class MergedAdapter extends BaseAdapter{
             return adapter.getProvider({name: bucket}, this.type, provides)
         })
 
-        return (query) => {
+        return async (query) => {
 
             console.log("Querying ", this.type, query)
             return Promise.all(actions.map((x) => x(query))).then((results) => {
