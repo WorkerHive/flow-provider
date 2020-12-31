@@ -42,7 +42,8 @@ class FlowConnector{
     }
 
     async get(type, query){
-        let flowDef = this.flowDefs[type];
+        console.log("GET", this.flowDefs[type])
+        let flowDef = this.flowDefs[type] || {};
         let path = new FlowPath(this.typeMap[type], flowDef)
         let batches = path.getBatched();
         console.log("Get with", type, query)
