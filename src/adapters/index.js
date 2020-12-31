@@ -32,7 +32,7 @@ class MergedAdapter extends BaseAdapter{
     }
 
     sortActions(type){
-        let refs = this.paths.refs;
+        let refs = this.paths.refs || {};
         let paths = Object.assign({}, this.paths)
         delete paths.refs;
 
@@ -43,7 +43,7 @@ class MergedAdapter extends BaseAdapter{
             for(var path in paths[store]){
                 let map = objectFlip(Object.assign({}, paths[store][path]))
 
-                let refKey = Object.keys(refs).map((x) => {
+                let refKey = !Object.keys(refs).length > 0 || Object.keys(refs).map((x) => {
                     return Object.keys(map).indexOf(x)
                 }).filter((a) => a > -1).length > 0
 
@@ -80,7 +80,7 @@ class MergedAdapter extends BaseAdapter{
 
     doActions(get_func){
         const { primaryActions, supportingActions } = this.sortActions(this.type);
-        const { refs } = this.paths;
+        const refs  = this.paths.refs || {};
 
         let actions = [];
         let supporting = [];
