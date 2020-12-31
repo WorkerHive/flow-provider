@@ -15,8 +15,8 @@ class MongoAdapter extends BaseAdapter{
                 search[k] = (typeDef._fields[k].type == "ID") ?  ObjectId(search[k]) : search[k];
             }
             let query = mapQuery(objectFlip(provides), search)
-            console.log(query)
             let result = await this.client.collection(`${bucket.name}`).findOne(query)
+            console.log("Get Result", result, query, bucket)
             return mapForward(typeDef, provides, result)
         }
     }
