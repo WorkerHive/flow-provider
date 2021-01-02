@@ -38,7 +38,7 @@ class MongoAdapter extends BaseAdapter{
             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
             console.log("PRovides", provides, obj)
             let inputObject = mapBack(provides, obj)
-            return await this.client.collection(`${bucket.name}`).updateOne(q, inputObject)
+            return await this.client.collection(`${bucket.name}`).updateOne(q, {$set: inputObject})
         }
     }
 
