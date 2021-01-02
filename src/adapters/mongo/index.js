@@ -35,7 +35,8 @@ class MongoAdapter extends BaseAdapter{
                 query[k] = (typeDef._fields[k].type == "ID") ? ObjectId(query[k]) : query[k]
             }
 
-            let q = mapQuery(objectFlip(provides), query)
+            let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
+            console.log("PRovides", provides, obj)
             let inputObject = mapBack(provides, obj)
             return await this.client.collection(`${bucket.name}`).updateOne(q, inputObject)
         }
