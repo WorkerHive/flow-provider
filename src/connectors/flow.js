@@ -19,12 +19,12 @@ class FlowConnector{
         return result;
     }
 
-    async put(type, id, update){
+    async put(type, query, update){
         let flowDef = this.flowDefs[type] || {};
         let path = new FlowPath(this.typeMap[type], flowDef)
         let batches = path.getBatched();
         let adapter = new MergedAdapter(this.typeMap[type], this.stores, batches)
-        let result = await adapter.updateProvider()(id, update)
+        let result = await adapter.updateProvider()(query, update)
         return result;
 
     }

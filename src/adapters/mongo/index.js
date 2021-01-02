@@ -30,6 +30,7 @@ class MongoAdapter extends BaseAdapter{
 
     updateProvider(bucket, typeDef, provides){
         return async(query, obj) => {
+            console.log("Update provider", query)
             for(var k in query){
                 query[k] = (typeDef._fields[k].type == "ID") ? ObjectId(query[k]) : query[k]
             }
