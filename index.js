@@ -8,6 +8,7 @@ const MSSQLAdapter = require('./src/adapters/mssql')
 
 const MongoStore = require('./src/stores/mongo')
 
+const UploadDirective = require('./src/directives/upload');
 const InputDirective = require('./src/directives/input')
 const CRUDDirective = require('./src/directives/crud')
 const ConfigurableDirective = require('./src/directives/configurable')
@@ -15,6 +16,7 @@ const ConfigurableDirective = require('./src/directives/configurable')
 const InputTransform = require('./src/transforms/input')
 const ConfigurableTransform = require('./src/transforms/configurable')
 const CRUDTransform = require('./src/transforms/crud')
+const UploadTranform = require('./src/transforms/upload')
 
 const StoreManager = require('./src/stores')
 
@@ -42,6 +44,7 @@ class FlowProvider{
 
 
     setupServer(){
+        const { uploadTypeDefs, uploadTransformer } = UploadTranform()
         const { inputTransformTypeDefs, inputTransformTransformer } = InputTransform()
         const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
@@ -51,11 +54,13 @@ class FlowProvider{
                 inputTransformTypeDefs, 
                 configurableTypeDefs, 
                 crudTypeDefs, 
+                uploadTypeDefs,
                 this.typeDefs
             ],
             resolvers: this.flowResolvers,
-            schemaTransforms: [ inputTransformTransformer, configurableTransformer, crudTransformer ],
+            schemaTransforms: [ uploadTransformer, inputTransformTransformer, configurableTransformer, crudTransformer ],
             schemaDirectives: {
+                upload: UploadDirective,
                 configurable: ConfigurableDirective,
                 input: InputDirective,
                 crud: CRUDDirective
@@ -69,6 +74,7 @@ class FlowProvider{
         this.server = fn({
             schema: this.schema,
             schemaDirectives: {
+                upload: UploadDirective,
                 configurable: ConfigurableDirective,
                 crud: CRUDDirective,
                 input: InputDirective
