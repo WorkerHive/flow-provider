@@ -122,4 +122,4 @@ function uploadTransformer (){
 }
 
 
-module.exports = crudTransformer
+module.exports = uploadTransformer
