@@ -79,10 +79,7 @@ function uploadTransformer (){
                         let files = await context.connections.flow.get(objectName, {filename: file.filename, cid: ipfsFile.cid.toString()})
 
                         if(files){
-                            return {
-                                duplicate: true,
-                                file: files
-                            }
+                            return files;
                         }else{
                             let newFile = {
                                 cid: ipfsFile.cid.toString(),
@@ -91,10 +88,7 @@ function uploadTransformer (){
                             }
                             let _file = await context.connections.flow.add(objectName, newFile)
                             
-                            return {
-                              duplicate: false,
-                              file: _file
-                            }
+                            return _file;
                         }
                     })
                 }
