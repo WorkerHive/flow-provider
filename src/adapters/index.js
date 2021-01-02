@@ -86,6 +86,7 @@ class MergedAdapter extends BaseAdapter{
         let supporting = [];
 
         this.iteratePaths(primaryActions, (store, path, action) => {
+            console.log("Action", action)
             let adapter = new MongoAdapter(this.storeList.getStore(store).db)
             let func = get_func(adapter, path, action[store][path])
             actions.push(func)
