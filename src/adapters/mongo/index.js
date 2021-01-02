@@ -38,6 +38,12 @@ class MongoAdapter extends BaseAdapter{
             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
             console.log("PRovides", provides, obj)
             let inputObject = mapBack(provides, obj)
+
+            for(var key in inputObject){
+                if(!inputObject[key]){
+                    delete inputObject[key]
+                }
+            }
             return await this.client.collection(`${bucket.name}`).updateOne(q, {$set: inputObject})
         }
     }
