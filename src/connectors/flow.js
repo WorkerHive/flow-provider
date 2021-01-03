@@ -50,6 +50,7 @@ class FlowConnector{
 
     async getAll(type){
         let flowDef = this.flowDefs[type] || {};
+        console.log("Get all flow def", flowDef, this.typeMap, type);
         let path = new FlowPath(this.typeMap[type], flowDef)
         let batches = path.getBatched();
         let adapter = new MergedAdapter(this.typeMap[type], this.stores, batches)
