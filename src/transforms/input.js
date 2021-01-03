@@ -51,7 +51,10 @@ function inputTransform (){
             }
 
             let ix = outputTypes.map((x) => x.name).indexOf(type.name)
-            outputTypes[ix].fields = outputFields;
+            outputTypes[ix] = new GraphQLInputObjectType({
+                name: type.name, 
+                fields: outputFields
+            });
         })
         return outputTypes
     }
