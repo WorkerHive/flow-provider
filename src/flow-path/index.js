@@ -15,14 +15,16 @@ class FlowPath{
         let typeDef = this.typeDef.astNode;
         console.log("Setup Default", typeDef);
         for(var k in typeDef.fields){
-            console.log(k, typeDef.fields[k])
-            if(this.provides[k]){
-                this.flow[k] = this.provides[k]
+            let key = typeDef.fields[k].name.value;
+
+            
+            if(this.provides[key]){
+                this.flow[key] = this.provides[key]
             }else{
                 if(typeDef.fields[k].type.name.value == "ID") {
-                    this.flow[k] = `app:${this.typeDef.name}:_id`;
+                    this.flow[key] = `app:${this.typeDef.name}:_id`;
                 }else{
-                    this.flow[k] = `app:${this.typeDef.name}:${k}`
+                    this.flow[key] = `app:${this.typeDef.name}:${key}`
                 }
                 
             }
