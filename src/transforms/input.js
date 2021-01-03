@@ -17,7 +17,7 @@ function inputTransform (){
                     newType = GraphQLInt;
                     break;
             }
-            console.log(type.fields[i])
+            console.log(type.fields[i].astNode.type)
             fields[type.fields[i].name] = {type: type.fields[i].type}
         }
         return new GraphQLInputObjectType({
