@@ -21,8 +21,8 @@ function inputTransform (){
         }
     }
 
-    const makeFields = (fields) => {
-        let outputTypes = [];
+    const makeRefFields = (types, fields) => {
+        let outputTypes = types.slice();
         fields.forEach(type => {
             let outputFields = {}
 
@@ -30,17 +30,17 @@ function inputTransform (){
                 let newType;
                 if(type.fields[i].type.kind == "NamedType"){
                     if(isNativeType(type.fields[i].type) != null){
-                        newType = isNativeType(type.fields[i].type)
+                       
                     }else{
-                        newType = {name: type.fields[i].type.name.value + "Input"}; //types.filter((a) => a.name == type.fields[i].type.name.value)[0]
+                        newType = types.filter((a) => a.name == `${type.fields[i].type.name.value}Input`)[0]
                     }
                     
                 }else if(type.fields[i].type.kind == "ListType"){
                     if(isNativeType(type.fields[i].type.type) != null){
-                        newType = isNativeType(type.fields[i].type.type);
+                      
                     }else{
                        // console.log(types, type.fields[i].type.type.name.value);
-                        newType = {name: type.fields[i].type.type.name.value + "Input"}; //types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
+                        newType = types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
                     }
                     
                     newType = new GraphQLList(newType)
@@ -50,20 +50,42 @@ function inputTransform (){
                 console.log(fields)
             }
 
-            //let ix = outputTypes.map((x) => x.name).indexOf(type.name)
-            outputTypes.push(new GraphQLInputObjectType({
-                name: type.name, 
-                fields: outputFields
-            }))
+            let ix = outputTypes.map((x) => x.name).indexOf(type.name)
+            let config = outputTypes[ix].toConfig();
+            outputTypes[ix] = new GraphQLInputObjectType({
+                ...config,
+                fields: {
+                    ...config.fields,
+                    fields: outputFields
+                }
+            })
         })
         return outputTypes
     }
 
     const makeInput = (type) => {
-      
+        let outputFields = {};
+
+        for(var i = 0; i < type.fields.length; i++){
+            let newType;
+            if(type.fields[i].type.kind == "NamedType"){
+                if(isNativeType(type.fields[i].type) != null){
+                    newType = isNativeType(type.fields[i].type)
+                }
+                
+            }else if(type.fields[i].type.kind == "ListType"){
+                if(isNativeType(type.fields[i].type.type) != null){
+                    newType = isNativeType(type.fields[i].type.type);
+                }
+                
+                newType = new GraphQLList(newType)
+            }
+
+            outputFields[type.fields[i].name] = {type: newType};
+        }
         return new GraphQLInputObjectType({
             name: type.name,
-            fields: {}
+            fields: outputFields
         })
     }
 
@@ -101,8 +123,8 @@ function inputTransform (){
                 }
             })
 
-           // let newTypes = inputFields.map(makeInput)
-            let newTypes = makeFields(inputFields)
+            let newTypes = inputFields.map(makeInput)
+            newTypes = makeRefFields(newTypes, inputFields)
           
             let _schema = new GraphQLSchema({
                 types: newTypes
