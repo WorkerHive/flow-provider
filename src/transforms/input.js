@@ -39,7 +39,8 @@ function inputTransform (){
                     if(isNativeType(type.fields[i].type.type) != null){
                         newType = isNativeType(type.fields[i].type.type);
                     }else{
-                        newType = types.filter((a) => a.name == type.fields[i].type.type.name.value)[0]
+                        console.log(types, type.fields[i].type.type.name.value);
+                        newType = types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
                     }
                     
                     newType = new GraphQLList(newType)
