@@ -5,7 +5,7 @@ const { objectValues, compact } = require('./utils')
 const { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
 const { findTypesWithDirective } = require("../utils")
 const { camelCase } =  require("camel-case");
-
+const { schemaComposer } = require('graphql-compose')
 let typeMap;
 
 
@@ -13,6 +13,8 @@ function crudTransformer (){
     return {
         crudTypeDefs: `directive @crud on OBJECT`,
         crudTransformer: (schema) => {
+
+            schemaComposer.merge(schema);
 
             console.log("CRUD TRANSFORM")
 
@@ -31,7 +33,7 @@ function crudTransformer (){
 
                 const objectName = dirs[i].name;
 
-                args[camelCase(objectName)] = {type: schema._typeMap[`${objectName}Input`]}
+                args[camelCase(objectName)] = `${objectName}Input`
                 
                 const addTag = `add${objectName}`
                 const updateTag = `update${objectName}`
@@ -40,81 +42,65 @@ function crudTransformer (){
                 const getAllTag = `${camelCase(objectName)}s`
                 const getTag = `${camelCase(objectName)}`;
 
-                mutationFields[addTag] = {
-                    type: schema._typeMap[objectName],
-                    args: args
-                }
-
-                mutationFields[updateTag] = {
-                    type: schema._typeMap[objectName],
-                    args: {
-                        ...args,
-                        id: {type: GraphQLID}
+                schemaComposer.Mutation.addFields({
+                    [addTag]: {
+                        type: objectName,
+                        args: args,
+                        resolve: async (parent, args, context) => {
+                            //Add one of item
+                            console.log(addTag, objectName)
+                            return await context.connections.flow.add(objectName, args[camelCase(objectName)])
+                        }
+                    },
+                    [updateTag]: {
+                        type: objectName,
+                        args: {
+                            ...args,
+                            id: 'ID'
+                        },
+                        resolve: async (parent, args, context) => {
+                            //Update one of item
+                            return await context.connections.flow.put(objectName, {id: args.id}, args[camelCase(objectName)])
+                        }
+                    },
+                    [deleteTag]: {
+                        type: 'Boolean',
+                        args: {
+                            id: 'ID'
+                        },
+                        resolve: async (parent, args, context) => {
+                            //Remove one of item
+                            return await context.connections.flow.delete(objectName, {id: args.id})
+                        }
                     }
-                }
+                })
 
-                mutationFields[deleteTag] = {
-                    type: GraphQLBoolean,
-                    args: {
-                        ...args,
-                        id: {type: GraphQLID}
+                schemaComposer.Query.addFields({
+                    [getAllTag]:{
+                        type: `[${objectName}]`,
+                        resolve: async (parent, _args, context, info) => {
+                            //Get all of item
+                            return await context.connections.flow.getAll(objectName)
+                        }
+                    },
+                    [getTag]: {
+                        type: objectName,
+                        args: {
+                            id: 'ID'
+                        },
+                        resolve: async (parent, {id}, context, info) => {
+                            //Get one of item
+                            return await context.connections.flow.get(objectName, {id: id});
+                        }
                     }
-                }
+                })
 
-                queryFields[getAllTag] = {
-                    type: new GraphQLList(schema._typeMap[objectName])
-                }
-
-                queryFields[getTag] = {
-                    type: schema._typeMap[objectName],
-                    args: {
-                        id: {type: GraphQLID}
-                    }
-                }
-
-                Query[getAllTag] = async (parent, _args, context, info) => {
-                    //Get all of item
-                    return await context.connections.flow.getAll(objectName)
-                }
-
-                Query[getTag] = async (parent, {id}, context, info) => {
-                    //Get one of item
-                    return await context.connections.flow.get(objectName, {id: id});
-                }
-            
-                Mutation[addTag] = async (parent, args, context) => {
-                    //Add one of item
-                    console.log(addTag, objectName)
-                    return await context.connections.flow.add(objectName, args[camelCase(objectName)])
-                }
-
-                Mutation[updateTag] = async (parent, args, context) => {
-                    //Update one of item
-                    return await context.connections.flow.put(objectName, {id: args.id}, args[camelCase(objectName)])
-                }
-
-                Mutation[deleteTag] = async (parent, args, context) => {
-                    //Remove one of item
-                    return await context.connections.flow.delete(objectName, {id: args.id})
-                }
+           
+  
             }
 
-
-            let mutation = new GraphQLObjectType({
-                name: 'Mutation',
-                fields: mutationFields
-            })
             
-            let query = new GraphQLObjectType({
-                name: 'Query',
-                fields: queryFields
-            })
-
-            let crudSchema = new GraphQLSchema({
-                types: [mutation, query],
-            })
-            
-            return mergeSchemas({schemas: [schema, crudSchema], resolvers: [{Mutation, Query}]})
+            return schemaComposer.buildSchema();
         }
     }
 }
