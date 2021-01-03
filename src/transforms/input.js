@@ -21,8 +21,8 @@ function inputTransform (){
         }
     }
 
-    const makeFields = (types, fields) => {
-        let outputTypes = types.slice();
+    const makeFields = (fields) => {
+        let outputTypes = [];
         fields.forEach(type => {
             let outputFields = {}
 
@@ -32,7 +32,7 @@ function inputTransform (){
                     if(isNativeType(type.fields[i].type) != null){
                         newType = isNativeType(type.fields[i].type)
                     }else{
-                        newType = types.filter((a) => a.name == type.fields[i].type.name.value)[0]
+                        newType = {name: type.fields[i].type.name.value + "Input"}; //types.filter((a) => a.name == type.fields[i].type.name.value)[0]
                     }
                     
                 }else if(type.fields[i].type.kind == "ListType"){
@@ -40,7 +40,7 @@ function inputTransform (){
                         newType = isNativeType(type.fields[i].type.type);
                     }else{
                         console.log(types, type.fields[i].type.type.name.value);
-                        newType = types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
+                        newType = {name: type.fields[i].type.type.name.value + "Input"}; //types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
                     }
                     
                     newType = new GraphQLList(newType)
@@ -50,11 +50,11 @@ function inputTransform (){
                 console.log(fields)
             }
 
-            let ix = outputTypes.map((x) => x.name).indexOf(type.name)
-            outputTypes[ix] = new GraphQLInputObjectType({
+            //let ix = outputTypes.map((x) => x.name).indexOf(type.name)
+            outputTypes.push(new GraphQLInputObjectType({
                 name: type.name, 
                 fields: outputFields
-            });
+            }))
         })
         return outputTypes
     }
@@ -101,8 +101,8 @@ function inputTransform (){
                 }
             })
 
-            let newTypes = inputFields.map(makeInput)
-            newTypes = makeFields(newTypes, inputFields)
+           // let newTypes = inputFields.map(makeInput)
+            let newTypes = makeFields(inputFields)
           
             let _schema = new GraphQLSchema({
                 types: newTypes
