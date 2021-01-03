@@ -1407,6 +1407,14 @@ graceful-fs@^4.1.2:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
 
+graphql-compose@^7.23.0:
+  version "7.23.0"
+  resolved "https://registry.yarnpkg.com/graphql-compose/-/graphql-compose-7.23.0.tgz#df377fed9758cb42ffe310c4437ec443b4c2dc7f"
+  integrity sha512-OZxrc3FQoFumf2cG1IiBraIAPbiYjdLZFyNADAZ26n7betm9t7wu4LcgGJ7DhvsGQ7NAtBc5QgM2CQ2uhP0KLg==
+  dependencies:
+    graphql-type-json "0.3.2"
+    object-path "^0.11.4"
+
 graphql-extensions@^0.12.7:
   version "0.12.7"
   resolved "https://registry.yarnpkg.com/graphql-extensions/-/graphql-extensions-0.12.7.tgz#9732cb50090eee6ca9226ad9349a4308668a1fa5"
@@ -1438,6 +1446,11 @@ graphql-tools@^4.0.0:
     deprecated-decorator "^0.1.6"
     iterall "^1.1.3"
     uuid "^3.1.0"
+
+graphql-type-json@0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
+  integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
 
 graphql-upload@^8.0.2:
   version "8.1.0"

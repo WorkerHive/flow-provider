@@ -1,6 +1,6 @@
 {
   "name": "@workerhive/flow-provider",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "main": "index.js",
   "repository": "git@github.com:WorkerHive/flow-provider.git",
   "author": "Ross Leitch <professional.balbatross@gmail.com>",
@@ -15,6 +15,7 @@
     "apollo-server": "^2.19.1",
     "camel-case": "^4.1.2",
     "file-extension": "^4.0.5",
+    "graphql-compose": "^7.23.0",
     "lodash": "^4.17.20"
   },
   "devDependencies": {

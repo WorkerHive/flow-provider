@@ -2,7 +2,7 @@ const { Transform, mergeSchemas, gql } = require('apollo-server')
 const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
 const { objectValues, compact } = require('./utils.js')
 const { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
-
+const { schemaComposer } = require('graphql-compose');
 
 function inputTransform (){
 
@@ -70,23 +70,30 @@ function inputTransform (){
             let newType;
             if(type.fields[i].type.kind == "NamedType"){
                 if(isNativeType(type.fields[i].type) != null){
-                    newType = isNativeType(type.fields[i].type)
+                    newType = type.fields[i].type.name.value
+                }else{
+                    newType = `${type.fields[i].type.name.value}Input`
                 }
                 
             }else if(type.fields[i].type.kind == "ListType"){
                 if(isNativeType(type.fields[i].type.type) != null){
-                    newType = isNativeType(type.fields[i].type.type);
+                    newType = `[${type.fields[i].type.type.name.value}]`;
+                }else{
+                    newType = `[${type.fields[i].type.type.name.value}Input]`
                 }
                 
-                newType = new GraphQLList(newType)
+
             }
 
-            outputFields[type.fields[i].name] = {type: newType};
+            outputFields[type.fields[i].name] = newType
         }
-        return new GraphQLInputObjectType({
-            name: type.name,
+
+        return schemaComposer.createInputTC({
+            name: type.name, 
             fields: outputFields
         })
+
+
     }
 
     return {
@@ -124,11 +131,11 @@ function inputTransform (){
             })
 
             let newTypes = inputFields.map(makeInput)
-            newTypes = makeRefFields(newTypes, inputFields)
+           // newTypes = makeRefFields(newTypes, inputFields)
           
-            let _schema = new GraphQLSchema({
+            let _schema = schemaComposer.buildSchema(); /*new GraphQLSchema({
                 types: newTypes
-            })
+            })*/
             
             return mergeSchemas({schemas:[schema, _schema]})
         }
