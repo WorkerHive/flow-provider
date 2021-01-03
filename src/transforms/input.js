@@ -39,7 +39,7 @@ function inputTransform (){
                     if(isNativeType(type.fields[i].type.type) != null){
                         newType = isNativeType(type.fields[i].type.type);
                     }else{
-                        console.log(types, type.fields[i].type.type.name.value);
+                       // console.log(types, type.fields[i].type.type.name.value);
                         newType = {name: type.fields[i].type.type.name.value + "Input"}; //types.filter((a) => a.name == `${type.fields[i].type.type.name.value}Input`)[0]
                     }
                     
