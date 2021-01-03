@@ -1,40 +1,59 @@
 const { Transform, mergeSchemas, gql } = require('apollo-server')
 const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
 const { objectValues, compact } = require('./utils.js')
-const { GraphQLSchema, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
+const { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
 
 
 function inputTransform (){
-    const makeInput = (type) => {
-        let fields = {}
-        for(var i = 0; i < type.fields.length; i++){
-            let newType;
-            if(type.fields[i].type.kind == "NamedType"){
-                newType = Object.assign({}, type.fields[i].type)
-                
-            }else if(type.fields[i].type.kind == "ListType"){
-                newType = Object.assign({}, type.fields[i].type);
-                
-                switch(type.fields[i].type.type.name.value){
-                    case "String":
-                    case "Int":
-                    case "Boolean":
-                    case "Float":
-                        
-                        break
-                    default:
-                        newType.type.name.value = `${newType.type.name.value}Input`
-                        break;
+
+    const isNativeType = (type) => {
+        switch(type.name.value){
+            case "String":
+                return GraphQLString;
+            case "Int":
+                return GraphQLInt;
+            case "Float":
+                return GraphQLFloat;
+            case "Boolean":
+                return GraphQLBoolean;
+            default:
+                return null;
+        }
+    }
+
+    const makeFields = (types, fields) => {
+        let outputFields = {}
+        fields.forEach(type => {
+            for(var i = 0; i < type.fields.length; i++){
+                let newType;
+                if(type.fields[i].type.kind == "NamedType"){
+                    if(isNativeType(type.fields[i]) != null){
+                        newType = isNativeType(type.fields[i])
+                    }else{
+                        newType = types.filter((a) => a.name == type.fields[i].type.name.value)[0]
+                    }
+                    
+                }else if(type.fields[i].type.kind == "ListType"){
+                    if(isNativeType(type.fields[i].type) != null){
+                        newType = isNativeType(type.fields[i].type);
+                    }else{
+                        newType = types.filter((a) => a.name == type.fields[i].type.type.name.value)[0]
+                    }
+                    
+                    newType = new GraphQLList(newType)
                 }
 
+                outputFields[type.fields[i].name] = {type: newType};
+                console.log(fields)
             }
+        })
+    }
 
-            fields[type.fields[i].name] = newType;
-            console.log(fields)
-        }
+    const makeInput = (type) => {
+      
         return new GraphQLInputObjectType({
             name: type.name,
-            fields: fields
+            fields: {}
         })
     }
 
@@ -73,7 +92,7 @@ function inputTransform (){
             })
 
             let newTypes = inputFields.map(makeInput)
-   
+            makeFields(newTypes, inputFields)
           
             let _schema = new GraphQLSchema({
                 types: newTypes
