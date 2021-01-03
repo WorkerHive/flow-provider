@@ -10,7 +10,7 @@ function inputTransform (){
         for(var i = 0; i < type.fields.length; i++){
             let newType;
             if(type.fields[i].type.kind == "NamedType"){
-                newType = {type: type.fields[i].type.name.value};
+                newType = Object.assign({}, type.fields[i].type)
                 
             }else if(type.fields[i].type.kind == "ListType"){
                 newType = Object.assign({}, type.fields[i].type);
