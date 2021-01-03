@@ -12,6 +12,7 @@ class FlowPath{
     }
 
     setupOrDefault(){
+        console.log("Setup Default", this.typeDef, Object.keys(this.typeDef))
         for(var k in this.typeDef._fields){
             if(this.provides[k]){
                 this.flow[k] = this.provides[k]
