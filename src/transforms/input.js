@@ -29,14 +29,14 @@ function inputTransform (){
             for(var i = 0; i < type.fields.length; i++){
                 let newType;
                 if(type.fields[i].type.kind == "NamedType"){
-                    if(isNativeType(type.fields[i]) != null){
+                    if(isNativeType(type.fields[i].type) != null){
                         newType = isNativeType(type.fields[i].type)
                     }else{
                         newType = types.filter((a) => a.name == type.fields[i].type.name.value)[0]
                     }
                     
                 }else if(type.fields[i].type.kind == "ListType"){
-                    if(isNativeType(type.fields[i].type) != null){
+                    if(isNativeType(type.fields[i].type.type) != null){
                         newType = isNativeType(type.fields[i].type.type);
                     }else{
                         newType = types.filter((a) => a.name == type.fields[i].type.type.name.value)[0]
