@@ -13,7 +13,7 @@ function inputTransform (){
                 newType = {type: type.fields[i].type.name.value};
                 
             }else if(type.fields[i].type.kind == "ListType"){
-                
+                console.log(type.fields[i].type.type)
                 switch(type.fields[i].type.type.name.value){
                     case "String":
                     case "Int":
@@ -29,6 +29,7 @@ function inputTransform (){
             }
 
             fields[type.fields[i].name] = newType;
+            console.log(fields)
         }
         return new GraphQLInputObjectType({
             name: type.name,
