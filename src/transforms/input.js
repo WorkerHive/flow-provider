@@ -13,16 +13,17 @@ function inputTransform (){
                 newType = {type: type.fields[i].type.name.value};
                 
             }else if(type.fields[i].type.kind == "ListType"){
-                console.log(type.fields[i].type.type)
+                newType = Object.assign({}, type.fields[i].type);
+                
                 switch(type.fields[i].type.type.name.value){
                     case "String":
                     case "Int":
                     case "Boolean":
                     case "Float":
-                        newType = {type: `[${type.fields[i].type.type.name.value}]`}
+                        
                         break
                     default:
-                        newType = {type: `[${type.fields[i].type.type.name.value}Input]`}
+                        newType.type.name.value = `${newType.type.name.value}Input`
                         break;
                 }
 
