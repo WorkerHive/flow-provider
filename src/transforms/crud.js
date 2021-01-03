@@ -80,6 +80,7 @@ function crudTransformer (){
                         type: `[${objectName}]`,
                         resolve: async (parent, _args, context, info) => {
                             //Get all of item
+                            console.log("GET ALL", objectName)
                             return await context.connections.flow.getAll(objectName)
                         }
                     },
