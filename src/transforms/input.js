@@ -9,16 +9,26 @@ function inputTransform (){
         let fields = {}
         for(var i = 0; i < type.fields.length; i++){
             let newType;
-            switch(type.fields[i].type){
-                case 'String':
-                    newType = GraphQLString
-                    break;
-                case 'Int':
-                    newType = GraphQLInt;
-                    break;
+            if(type.fields[i].type.kind == "NamedType"){
+                newType = {type: type.fields[i].type.name.value};
+                
+            }else if(type.fields[i].type.kind == "ListType"){
+                
+                switch(type.fields[i].type.type.name.value){
+                    case "String":
+                    case "Int":
+                    case "Boolean":
+                    case "Float":
+                        newType = {type: `[${type.fields[i].type.type.name.value}]`}
+                        break
+                    default:
+                        newType = {type: `[${type.fields[i].type.type.name.value}Input]`}
+                        break;
+                }
+
             }
-            console.log("INPUT TYPE", type.fields[i].type)
-            fields[type.fields[i].name] = {type: type.fields[i].type}
+
+            fields[type.fields[i].name] = newType;
         }
         return new GraphQLInputObjectType({
             name: type.name,
