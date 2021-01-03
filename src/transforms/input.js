@@ -22,20 +22,22 @@ function inputTransform (){
     }
 
     const makeFields = (types, fields) => {
-        let outputFields = {}
+        let outputTypes = types.slice();
         fields.forEach(type => {
+            let outputFields = {}
+
             for(var i = 0; i < type.fields.length; i++){
                 let newType;
                 if(type.fields[i].type.kind == "NamedType"){
                     if(isNativeType(type.fields[i]) != null){
-                        newType = isNativeType(type.fields[i])
+                        newType = isNativeType(type.fields[i].type)
                     }else{
                         newType = types.filter((a) => a.name == type.fields[i].type.name.value)[0]
                     }
                     
                 }else if(type.fields[i].type.kind == "ListType"){
                     if(isNativeType(type.fields[i].type) != null){
-                        newType = isNativeType(type.fields[i].type);
+                        newType = isNativeType(type.fields[i].type.type);
                     }else{
                         newType = types.filter((a) => a.name == type.fields[i].type.type.name.value)[0]
                     }
@@ -46,7 +48,11 @@ function inputTransform (){
                 outputFields[type.fields[i].name] = {type: newType};
                 console.log(fields)
             }
+
+            let ix = outputTypes.map((x) => x.name).indexOf(type.name)
+            outputTypes[ix].fields = outputFields;
         })
+        return outputTypes
     }
 
     const makeInput = (type) => {
@@ -92,7 +98,7 @@ function inputTransform (){
             })
 
             let newTypes = inputFields.map(makeInput)
-            makeFields(newTypes, inputFields)
+            newTypes = makeFields(newTypes, inputFields)
           
             let _schema = new GraphQLSchema({
                 types: newTypes
