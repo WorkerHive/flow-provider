@@ -16,7 +16,6 @@ class FlowPath{
             if(this.provides[k]){
                 this.flow[k] = this.provides[k]
             }else{
-                console.log(this.typeDef._fields[k])
                 if(this.typeDef._fields[k].type == "ID") {
                     this.flow[k] = `app:${this.typeDef.name}:_id`;
                 }else{
