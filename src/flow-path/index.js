@@ -21,7 +21,8 @@ class FlowPath{
             if(this.provides[key]){
                 this.flow[key] = this.provides[key]
             }else{
-                if(typeDef.fields[k].type.name.value == "ID") {
+                let type = typeDef.fields[k].type.kind == "NamedType" ? typeDef.fields[k].type.name.value : typeDef.fields[k].type.type.name.value
+                if(type == "ID") {
                     this.flow[key] = `app:${this.typeDef.name}:_id`;
                 }else{
                     this.flow[key] = `app:${this.typeDef.name}:${key}`
