@@ -17,7 +17,7 @@ function inputTransform (){
                     newType = GraphQLInt;
                     break;
             }
-            console.log(type.fields[i].astNode && type.fields[i].astNode.type)
+            console.log("INPUT TYPE", type.fields[i].type)
             fields[type.fields[i].name] = {type: type.fields[i].type}
         }
         return new GraphQLInputObjectType({
@@ -53,7 +53,7 @@ function inputTransform (){
                     fields: x.fields.filter((a) => a.astNode).map((x) => {
                         return {
                             name: x.name,
-                            type: x.type,
+                            type: x.astNode.type,
                             directives: x.astNode.directives
                         }
                     }).filter((a) => a.directives.map((x) => x.name && x.name.value).indexOf('input') > -1)
