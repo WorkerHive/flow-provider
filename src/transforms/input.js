@@ -1,13 +1,15 @@
 const { Transform, mergeSchemas, gql } = require('apollo-server')
 const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
 const { objectValues, compact } = require('./utils.js')
-const { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
+const { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType, GraphQLID } = require('graphql')
 const { schemaComposer } = require('graphql-compose');
 
 function inputTransform (){
 
     const isNativeType = (type) => {
         switch(type.name.value){
+            case "ID":
+                return GraphQLID;
             case "String":
                 return GraphQLString;
             case "Int":
