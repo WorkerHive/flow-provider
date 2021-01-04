@@ -69,18 +69,19 @@ export class FlowProvider{
         let resolvers = schemaComposer.getResolveMethods()
 
         let typeDefs = [
-            this.typeDefs
-        ].join(`\n`)
-        schemaComposer.addTypeDefs(typeDefs)
-
-        let types = [
-            `scalar Upload`,
             `type Query {
                 empty: String
             }
             type Mutation {
                 empty: String
             }`,
+            this.typeDefs
+        ].join(`\n`)
+
+        schemaComposer.addTypeDefs(typeDefs)
+
+        let types = [
+            `scalar Upload`,
             inputTypeDefs, 
             configurableTypeDefs, 
             crudTypeDefs, 
@@ -103,6 +104,8 @@ export class FlowProvider{
             resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
             schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
         }
+
+        console.log(this.schemaOpts)
 
         this.schema = makeExecutableSchema(this.schemaOpts)
     }

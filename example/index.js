@@ -58,13 +58,14 @@ let resolvers = {
 
     },
     Mutation : {
-        
+
     }
 }
 
 let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
 
 flowProvider.applyInit((opts) => {
+    console.log(opts.schema)
     let schema = makeExecutableSchema({
         ...opts.schema
     })
