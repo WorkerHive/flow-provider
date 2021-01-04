@@ -1,20 +1,17 @@
-const { Transform, mergeSchemas, gql } = require('apollo-server')
-const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
-const { objectValues, compact } = require('./utils.js')
-const GraphQLJSON = require('graphql-type-json')
-const { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType, GraphQLID } = require('graphql')
-const { schemaComposer } = require('graphql-compose');
+import { Transform, mergeSchemas, gql } from 'apollo-server'
+import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
+import { objectValues, compact } from './utils.js'
+import { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType, GraphQLID } from 'graphql'
+import { schemaComposer }  from 'graphql-compose';
 
-const {GraphQLJSONObject} = GraphQLJSON
-
-function inputTransform (){
+export default function inputTransform (){
 
     const isNativeType = (type) => {
         switch(type.name.value){
-            case "JSONObject":
-                return GraphQLJSONObject
             case "JSON":
-                return GraphQLJSON
+                return "JSON"
+            case "Date":
+                return "Date";
             case "ID":
                 return GraphQLID;
             case "String":
@@ -106,8 +103,8 @@ function inputTransform (){
     }
 
     return {
-        inputTransformTypeDefs: `directive @input on OBJECT | FIELD_DEFINITION `,
-        inputTransformTransformer: (schema, fieldSet) => {
+        inputTypeDefs: `directive @input on OBJECT | FIELD_DEFINITION `,
+        inputTransformer: (schema) => {
 
             let types = objectValues(schema._typeMap).filter((a) => a instanceof GraphQLObjectType).map((x) => ({
                 ...x,
@@ -140,19 +137,11 @@ function inputTransform (){
             })
 
             let newTypes = inputFields.map(makeInput)
-           // newTypes = makeRefFields(newTypes, inputFields)
           
-            let _schema = schemaComposer.buildSchema(); /*new GraphQLSchema({
-                types: newTypes
-            })*/
+            let _schema = schemaComposer.buildSchema(); 
             
             return mergeSchemas({schemas:[schema, _schema]})
         }
     }
 }
 
-
-module.exports = inputTransform
-/*{
-    transformSchema: (schema: any) => console.log("SCHEMA", schema)
-}*/

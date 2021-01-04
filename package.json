@@ -1,12 +1,13 @@
 {
   "name": "@workerhive/flow-provider",
-  "version": "1.0.58",
-  "main": "index.js",
+  "version": "1.1.0",
+  "main": "dist/index.js",
   "repository": "git@github.com:WorkerHive/flow-provider.git",
   "author": "Ross Leitch <professional.balbatross@gmail.com>",
   "license": "MIT",
   "scripts": {
     "start:dev": "npm run build:dev",
+    "build": "tsc --project ./ --outDir ./dist",
     "build:dev": "nodemon 'index.js' --exec 'ts-node' index.js -e ts,graphql"
   },
   "dependencies": {
@@ -23,7 +24,10 @@
     "mongodb": "^3.6.3",
     "mssql": "^6.3.0",
     "nodemon": "^2.0.6",
+    "ts-loader": "^8.0.13",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.1"
   }
 }

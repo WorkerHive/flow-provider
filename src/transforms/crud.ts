@@ -1,30 +1,22 @@
-const { Transform, mergeSchemas, gql } = require('apollo-server')
-const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
-const { isNativeGraphQLType } = require('./native-symbols')
-const { objectValues, compact } = require('./utils')
-const { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
-const { findTypesWithDirective } = require("../utils")
-const { camelCase } =  require("camel-case");
-const { schemaComposer } = require('graphql-compose')
+import { Transform, mergeSchemas, gql } from 'apollo-server'
+import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
+import { isNativeGraphQLType } from './native-symbols'
+import { objectValues, compact } from './utils'
+import { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } from 'graphql'
+import { findTypesWithDirective } from "../utils"
+import { camelCase }  from "camel-case"
+import { schemaComposer }  from 'graphql-compose'
 let typeMap;
 
 
-function crudTransformer (){
+export default function crudTransformer (){
     return {
         crudTypeDefs: `directive @crud on OBJECT`,
         crudTransformer: (schema) => {
 
             schemaComposer.merge(schema);
 
-            console.log("CRUD TRANSFORM")
-
             let dirs = findTypesWithDirective(schema._typeMap, 'crud')
-
-            let Query = {}
-            let Mutation = {}
-
-            let mutationFields = {};
-            let queryFields = {};
 
             for(var i = 0; i < dirs.length; i++){
 
@@ -106,5 +98,3 @@ function crudTransformer (){
     }
 }
 
-
-module.exports = crudTransformer
