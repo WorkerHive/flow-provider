@@ -1,14 +1,15 @@
-const { transformSchema, gql, ApolloServer, mergeSchemas} = require('apollo-server')
-
+import { transformSchema, gql, ApolloServer, mergeSchemas} from 'apollo-server'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLSchema } from 'graphql-compose/lib/graphql';
+import { schemaComposer } from 'graphql-compose';
+
 import FlowConnector from './connectors/flow';
-const {GraphQLNamedType, GraphQLObjectType, GraphQLType} = require('graphql')
+import {GraphQLNamedType, GraphQLObjectType, GraphQLType} from 'graphql'
 
 import StoreManager from './stores';
 
-const MongoStore = require('./stores/mongo')
+import MongoStore from './stores/mongo'
 
 import { 
     InputDirective,
@@ -25,15 +26,12 @@ import {
 } from './transforms'
 
 
-const resolvers = require("./resolvers");
-const FlowPath = require('./flow-path');
+import resolvers from "./resolvers"
+import FlowPath from './flow-path'
 
-const configurableTransformer = require('./transforms/configurable');
-const crudTransformer = require('./transforms/crud');
-const { MergedAdapter } = require('./adapters');
+import { MergedAdapter } from './adapters'
 
-
-class FlowProvider{
+export class FlowProvider{
 
     public stores : StoreManager = new StoreManager();
     public connector: FlowConnector;
@@ -66,15 +64,21 @@ class FlowProvider{
         const { inputTypeDefs, inputTransformer } = InputTransform()
         const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
+
+        schemaComposer.addTypeDefs([
+            `type Query{empty:String} type Mutation{empty:String}`, 
+            inputTypeDefs, 
+            configurableTypeDefs, 
+            crudTypeDefs, 
+            uploadTypeDefs,
+            this.typeDefs
+        ].join(` `))
+
+        //schemaComposer.addResolveMethods(this.flowResolvers)
+
+        schemaComposer.buildSchema().getTypeMap()
         this.schema = makeExecutableSchema({
-            typeDefs: [
-                `type Query{empty:String} type Mutation{empty:String}`, 
-                inputTypeDefs, 
-                configurableTypeDefs, 
-                crudTypeDefs, 
-                uploadTypeDefs,
-                this.typeDefs
-            ],
+            typeDefs: schemaComposer.toSDL(),
             resolvers: this.flowResolvers,
             schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ]
         })
@@ -96,7 +100,7 @@ class FlowProvider{
 }
 
 
-module.exports = {
-    FlowProvider,
+export { 
     MongoStore
 }
+
