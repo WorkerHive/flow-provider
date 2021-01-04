@@ -1,16 +1,16 @@
-const { Transform, mergeSchemas, gql, GraphQLUpload } = require('apollo-server')
-const { getDirectives, mapSchema, MapperKind } = require('@graphql-tools/utils')
-const { isNativeGraphQLType } = require('./native-symbols')
-const { objectValues, compact } = require('./utils')
-const { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } = require('graphql')
-const { findTypesWithDirective } = require("../utils")
-const { camelCase } =  require("camel-case");
-const fileExtension = require('file-extension');
+import { Transform, mergeSchemas, gql, GraphQLUpload } from 'apollo-server'
+import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
+import { isNativeGraphQLType } from './native-symbols'
+import { objectValues, compact } from './utils'
+import { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } from 'graphql'
+import { findTypesWithDirective } from "../utils"
+import { camelCase } from "camel-case";
+import fileExtension from 'file-extension'
 
 let typeMap;
 
 
-function uploadTransformer (){
+export default function uploadTransformer (){
     return {
         uploadTypeDefs: `directive @upload on OBJECT`,
         uploadTransformer: (schema) => {
@@ -116,4 +116,3 @@ function uploadTransformer (){
 }
 
 
-module.exports = uploadTransformer

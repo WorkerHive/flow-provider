@@ -1,13 +1,16 @@
 {
   "name": "@workerhive/flow-provider",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "dist/index.js",
   "repository": "git@github.com:WorkerHive/flow-provider.git",
   "author": "Ross Leitch <professional.balbatross@gmail.com>",
   "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "start:dev": "npm run build:dev",
-    "build": "tsc --project ./ --outDir ./dist",
+    "build": "ncc build ./src/index.ts -o dist/",
     "build:dev": "nodemon 'index.js' --exec 'ts-node' index.js -e ts,graphql"
   },
   "dependencies": {
@@ -21,6 +24,7 @@
     "lodash": "^4.17.20"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.26.1",
     "mongodb": "^3.6.3",
     "mssql": "^6.3.0",
     "nodemon": "^2.0.6",
