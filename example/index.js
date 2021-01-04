@@ -1,8 +1,7 @@
 
-const { ApolloServer } = require('apollo-server')
-const { flow } = require('lodash')
-const { FlowFlags } = require('typescript')
+const { ApolloServer, GraphQLSchema, mergeSchemas, makeExecutableSchema } = require('apollo-server')
 const {FlowProvider, MongoStore} = require('..')
+const { schemaComposer } = require('graphql-compose');
 
 const typeDefs = `
 
@@ -14,6 +13,13 @@ const typeDefs = `
         applicationField: [Hash] 
         unaccountedField: String @input
         upsetField: [String]
+    }
+
+    type Project @crud {
+        id: ID
+        name: String @input
+        json: JSON @input
+        startDate: Date @input
     }
 
     type SensitiveType @crud @configurable{
@@ -54,7 +60,13 @@ let resolvers = {
 let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
 
 flowProvider.applyInit((opts) => {
-    return new ApolloServer(opts)
+    let schema = makeExecutableSchema({
+        ...opts.schema
+    })
+    return new ApolloServer({
+        schema,
+        context: opts.context
+    })
 })
 
 flowProvider.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})

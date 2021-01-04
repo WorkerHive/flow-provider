@@ -1,0 +1,46 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn install
+
+PATH: 
+  /home/workhub/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.0.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: ENOENT: no such file or directory, lstat '/home/workhub/work/flow-provider/example/node_modules/@workerhive/flow-provider/node_modules/graphql/graphql.d.ts'
+
+npm manifest: 
+  {
+    "name": "example",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "resolutions": {
+      "graphql": "14.2.1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "@workerhive/flow-provider": "file:..",
+      "apollo-server": "^2.19.1",
+      "graphql": "^14.2.1",
+      "graphql-compose": "^7.23.0",
+      "lodash": "^4.17.20"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

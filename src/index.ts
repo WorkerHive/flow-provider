@@ -1,7 +1,8 @@
 import {  GraphQLUpload } from 'apollo-server'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { mergeResolvers } from '@graphql-tools/merge'
-import { GraphQLSchema } from 'graphql-compose/lib/graphql';
+import { GraphQLDirective, GraphQLDirectiveConfig } from 'graphql-compose/lib/graphql';
+import { GraphQLSchema } from 'graphql'
 import { schemaComposer } from 'graphql-compose';
 
 import FlowConnector from './connectors/flow';
@@ -9,12 +10,12 @@ import StoreManager from './stores';
 
 import MongoStore from './stores/mongo'
 
-import { 
+const { 
     InputDirective,
     CRUDDirective,
     ConfigurableDirective,
     UploadDirective
-} from './directives'
+} = require('./directives')
 
 import { 
     InputTransform,
@@ -24,7 +25,6 @@ import {
 } from './transforms'
 
 
-import resolvers from "./resolvers"
 import FlowPath from './flow-path'
 import {merge} from 'lodash';
 import { MergedAdapter } from './adapters'
@@ -43,6 +43,7 @@ export class FlowProvider{
     public flowResolvers: any;
 
     public schema: GraphQLSchema;
+    public schemaOpts: any;
 
     constructor(typeDefs, flowDefs, userResolvers, ){
         this.stores = new StoreManager();
@@ -51,7 +52,7 @@ export class FlowProvider{
         this.flowDefs = flowDefs;
         this.userResolvers = userResolvers;
 
-        this.flowResolvers = mergeResolvers([resolvers(), userResolvers])
+        this.flowResolvers = userResolvers
 
         this.setupServer();
     }
@@ -63,48 +64,52 @@ export class FlowProvider{
         const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
 
-        schemaComposer.addTypeDefs([
-            `type Query{
-                empty:String
-            } 
-            type Mutation{
-                empty:String
-            }`, 
+        console.log("Adding type defs")
+        let resolvers = schemaComposer.getResolveMethods()
+
+        let typeDefs = [
+            this.typeDefs
+        ].join(`\n`)
+        schemaComposer.addTypeDefs(typeDefs)
+
+        let types = [
+            `scalar Upload`,
+            `type Query {
+                empty: String
+            }
+            type Mutation {
+                empty: String
+            }`,
             inputTypeDefs, 
             configurableTypeDefs, 
             crudTypeDefs, 
-            uploadTypeDefs,
-            this.typeDefs
-        ].join(` `))
+            uploadTypeDefs ].join(`\n`)
 
-        //schemaComposer.addResolveMethods(this.flowResolvers)
+        let typeMap = schemaComposer.types;
 
-        let schema = schemaComposer.buildSchema()
-        let config = schema.toConfig();
-
-        let types = `scalar Upload`;
-
-        let resolvers = schemaComposer.getResolveMethods()
-
-        schemaComposer.types.forEach((type) => {
-            let sdl = type.toSDL();
-            console.log(sdl);
-            types += `\n` + sdl;
+        
+        typeMap.forEach((val, key) => {
+            if(typeof(key) == "string"){
+                types += `\n` + val.toSDL();
+            }else{
+                //console.log(key)
+            }
+          
         })
-//        config.types.
 
-        this.schema = makeExecutableSchema({
+        this.schemaOpts = {
             typeDefs: types,
-            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, resolvers),
-            schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ]
-        })
+            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
+            schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
+        }
 
+        this.schema = makeExecutableSchema(this.schemaOpts)
     }
 
     applyInit(fn){
         this.connector = new FlowConnector(this.schema.getTypeMap(), this.flowDefs, this.stores);
         this.server = fn({
-            schema: this.schema,
+            schema: this.schemaOpts,
             context: {
                 connections: {
                     flow: this.connector

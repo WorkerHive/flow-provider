@@ -1,0 +1,20 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "resolutions": {
+    "graphql": "15.3.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.19.1",
+    "graphql": "^14.2.1",
+    "graphql-compose": "^7.23.0",
+    "lodash": "^4.17.20"
+  }
+}
