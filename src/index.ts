@@ -79,10 +79,23 @@ export class FlowProvider{
 
         //schemaComposer.addResolveMethods(this.flowResolvers)
 
-        schemaComposer.buildSchema().getTypeMap()
+        let schema = schemaComposer.buildSchema()
+        let config = schema.toConfig();
+
+        let types = `scalar Upload`;
+
+        let resolvers = schemaComposer.getResolveMethods()
+
+        schemaComposer.types.forEach((type) => {
+            let sdl = type.toSDL();
+            console.log(sdl);
+            types += `\n` + sdl;
+        })
+//        config.types.
+
         this.schema = makeExecutableSchema({
-            typeDefs: `scalar Upload \n` + schemaComposer.toSDL(),
-            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
+            typeDefs: types,
+            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, resolvers),
             schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ]
         })
 
