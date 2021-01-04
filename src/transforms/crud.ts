@@ -5,7 +5,7 @@ import { objectValues, compact } from './utils'
 import { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } from 'graphql'
 import { findTypesWithDirective } from "../utils"
 import { camelCase }  from "camel-case"
-import { schemaComposer, SchemaComposer }  from 'graphql-compose'
+import { NamedTypeComposer, schemaComposer, SchemaComposer }  from 'graphql-compose'
 let typeMap;
 
 
@@ -16,16 +16,15 @@ export default function crudTransformer (){
 
             schemaComposer.merge(schema);
 
-            
+            let dirs : Array<NamedTypeComposer<any>> = findTypesWithDirective(schema.types, 'crud')
 
-            let dirs = findTypesWithDirective(schema._typeMap, 'crud')
-
+            console.log("Found", dirs.length)
             for(var i = 0; i < dirs.length; i++){
-
+                
             
                 let args = {}
 
-                const objectName = dirs[i].name;
+                const objectName = dirs[i].getTypeName();
 
                 args[camelCase(objectName)] = `${objectName}Input`
                 

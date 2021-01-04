@@ -29,7 +29,7 @@ const typeDefs = `
         sensitiveKey: [Hash] @input
     }
 
-    type Hash {
+    type Hash @upload {
         algo: String @input
         data: String @input
     }`

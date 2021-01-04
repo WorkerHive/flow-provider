@@ -76,6 +76,9 @@ export class FlowProvider{
             }
             type Mutation {
                 empty: String
+            }
+            type Subscription {
+                empty: String
             }`,
             this.typeDefs
         ].join(`\n`)
@@ -83,15 +86,18 @@ export class FlowProvider{
         schemaFactory.addTypeDefs(typeDefs)
 
         let types = [
-            `scalar Upload`,
             inputTypeDefs, 
             configurableTypeDefs, 
             crudTypeDefs, 
             uploadTypeDefs ].join(`\n`)
 
+        inputTransformer(schemaFactory)
+        crudTransformer(schemaFactory)
+        uploadTransformer(schemaFactory)
+        configurableTransformer(schemaFactory)
+
         let typeMap = schemaFactory.types;
 
-        
         typeMap.forEach((val, key) => {
             if(typeof(key) == "string"){
                 types += `\n` + val.toSDL();
@@ -100,16 +106,9 @@ export class FlowProvider{
             }
         })
 
-        let inputScheme = inputTransformer(schemaFactory)
-        let crudScheme = crudTransformer(schemaFactory)
-        
-        inputScheme.forEach((schema) => {
-            types += '\n' + schema.toSDL();
-        })
-
         this.schemaOpts = {
             typeDefs: types,
-            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
+            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, schemaFactory.getResolveMethods()),
           //  schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
         }
 

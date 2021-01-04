@@ -6,7 +6,7 @@ import { GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType
 import { findTypesWithDirective } from "../utils"
 import { camelCase } from "camel-case";
 import fileExtension from 'file-extension'
-import { schemaComposer }  from 'graphql-compose'
+import { NamedTypeComposer, SchemaComposer, schemaComposer }  from 'graphql-compose'
 
 let typeMap;
 
@@ -14,13 +14,13 @@ let typeMap;
 export default function uploadTransformer (){
     return {
         uploadTypeDefs: `directive @upload on OBJECT`,
-        uploadTransformer: (schema) => {
+        uploadTransformer: (schema : SchemaComposer<any>) => {
 
             console.log(schema);
 
             schemaComposer.merge(schema);
 
-            let dirs = findTypesWithDirective(schema.getTypeMap(), 'upload')
+            let dirs : Array<NamedTypeComposer<any>> = findTypesWithDirective(schema.types, 'upload')
 
             let Query = {}
             let Mutation = {}
@@ -30,22 +30,22 @@ export default function uploadTransformer (){
 
             for(var i = 0; i < dirs.length; i++){
 
-                let typeMap = schema.getTypeMap();
+                let type = dirs[i];
 
                 let args = {}
 
-                const objectName = dirs[i].name;
+                const objectName = type.getTypeName();
 
                 const uploadTag = `upload${objectName}`;
 
-                args[camelCase(objectName)] = {type: schema.getTypeMap()[`${objectName}Input`]}
+                args[camelCase(objectName)] = `${objectName}Input`
 
                 const getAllTag = `${camelCase(objectName)}s`
                 const getTag = `${camelCase(objectName)}`;
 
                 schemaComposer.Mutation.addFields({
                     [uploadTag]:{
-                        type: typeMap[objectName].toString(),
+                        type: objectName,
                         args: {
                             file: {type: GraphQLUpload}
                         },
@@ -77,14 +77,14 @@ export default function uploadTransformer (){
 
                 schemaComposer.Query.addFields({
                     [getAllTag]:{
-                        type: new GraphQLList(schema.getTypeMap()[objectName]),
+                        type: `[${objectName}]`,
                         resolve: async (parent, _args, context, info) => {
                             //Get all of item
                             return await context.connections.flow.getAll(objectName)
                         }
                     },
                     [getTag]:{
-                        type: typeMap[objectName].toString(),
+                        type: objectName,
                         args: {
                             id: {type:GraphQLID}
                         },
