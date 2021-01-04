@@ -1,12 +1,10 @@
-import { transformSchema, gql, ApolloServer, mergeSchemas} from 'apollo-server'
+import {  GraphQLUpload } from 'apollo-server'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLSchema } from 'graphql-compose/lib/graphql';
 import { schemaComposer } from 'graphql-compose';
 
 import FlowConnector from './connectors/flow';
-import {GraphQLNamedType, GraphQLObjectType, GraphQLType} from 'graphql'
-
 import StoreManager from './stores';
 
 import MongoStore from './stores/mongo'
@@ -28,7 +26,7 @@ import {
 
 import resolvers from "./resolvers"
 import FlowPath from './flow-path'
-
+import {merge} from 'lodash';
 import { MergedAdapter } from './adapters'
 
 export class FlowProvider{
@@ -66,7 +64,12 @@ export class FlowProvider{
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
 
         schemaComposer.addTypeDefs([
-            `type Query{empty:String} type Mutation{empty:String}`, 
+            `type Query{
+                empty:String
+            } 
+            type Mutation{
+                empty:String
+            }`, 
             inputTypeDefs, 
             configurableTypeDefs, 
             crudTypeDefs, 
@@ -78,8 +81,8 @@ export class FlowProvider{
 
         schemaComposer.buildSchema().getTypeMap()
         this.schema = makeExecutableSchema({
-            typeDefs: schemaComposer.toSDL(),
-            resolvers: this.flowResolvers,
+            typeDefs: `scalar Upload \n` + schemaComposer.toSDL(),
+            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
             schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ]
         })
 
