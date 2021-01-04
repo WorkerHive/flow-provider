@@ -28,6 +28,7 @@ import {
 import FlowPath from './flow-path'
 import {merge} from 'lodash';
 import { MergedAdapter } from './adapters'
+import resolvers from './resolver-base'
 
 export class FlowProvider{
 
@@ -52,7 +53,7 @@ export class FlowProvider{
         this.flowDefs = flowDefs;
         this.userResolvers = userResolvers;
 
-        this.flowResolvers = userResolvers
+        this.flowResolvers = merge(resolvers, userResolvers)
 
         this.setupServer();
     }

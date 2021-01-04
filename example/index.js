@@ -54,7 +54,12 @@ let flowDefs = {
 }
 
 let resolvers = {
+    Query: {
 
+    },
+    Mutation : {
+        
+    }
 }
 
 let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
