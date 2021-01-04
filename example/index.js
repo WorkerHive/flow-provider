@@ -1,5 +1,5 @@
 
-const { ApolloServer, GraphQLSchema, mergeSchemas, makeExecutableSchema } = require('apollo-server')
+const { ApolloServer, makeExecutableSchema } = require('apollo-server')
 const {FlowProvider, MongoStore} = require('..')
 const { schemaComposer } = require('graphql-compose');
 
@@ -26,12 +26,12 @@ const typeDefs = `
         id: ID
         name: String @input
         description: String @input
-        sensitiveKey: Int
+        sensitiveKey: [Hash] @input
     }
 
     type Hash {
-        algo: String
-        data: String
+        algo: String @input
+        data: String @input
     }`
 
 let flowDefs = {
@@ -65,10 +65,11 @@ let resolvers = {
 let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
 
 flowProvider.applyInit((opts) => {
-    console.log(opts.schema)
-    let schema = makeExecutableSchema({
-        ...opts.schema
+
+    const schema = makeExecutableSchema({
+        ...opts.schema,
     })
+
     return new ApolloServer({
         schema,
         context: opts.context

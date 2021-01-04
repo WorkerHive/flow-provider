@@ -7,11 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "resolutions": {
-    "graphql": "15.3.0"
+    "graphql": "^15.0.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@graphql-tools/schema": "^7.1.2",
     "apollo-server": "^2.19.1",
     "graphql": "^14.2.1",
     "graphql-compose": "^7.23.0",

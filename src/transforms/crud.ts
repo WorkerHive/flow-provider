@@ -5,16 +5,18 @@ import { objectValues, compact } from './utils'
 import { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } from 'graphql'
 import { findTypesWithDirective } from "../utils"
 import { camelCase }  from "camel-case"
-import { schemaComposer }  from 'graphql-compose'
+import { schemaComposer, SchemaComposer }  from 'graphql-compose'
 let typeMap;
 
 
 export default function crudTransformer (){
     return {
         crudTypeDefs: `directive @crud on OBJECT`,
-        crudTransformer: (schema) => {
+        crudTransformer: (schema : SchemaComposer<any>) => {
 
             schemaComposer.merge(schema);
+
+            
 
             let dirs = findTypesWithDirective(schema._typeMap, 'crud')
 

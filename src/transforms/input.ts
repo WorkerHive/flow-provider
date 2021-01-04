@@ -2,12 +2,12 @@ import { Transform, mergeSchemas, gql } from 'apollo-server'
 import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
 import { objectValues, compact } from './utils.js'
 import { GraphQLSchema, GraphQLBoolean, GraphQLFloat, GraphQLObjectType, isListType, isNonNullType, GraphQLType, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType, GraphQLID } from 'graphql'
-import { schemaComposer }  from 'graphql-compose';
+import { SchemaComposer, schemaComposer }  from 'graphql-compose';
 
 export default function inputTransform (){
 
     const isNativeType = (type) => {
-        switch(type.name.value){
+        switch(type){
             case "JSON":
                 return "JSON"
             case "Date":
@@ -69,78 +69,95 @@ export default function inputTransform (){
         return outputTypes
     }
 
-    const makeInput = (type) => {
+    const convertInput = (type) => {
         let outputFields = {};
 
-        for(var i = 0; i < type.fields.length; i++){
             let newType;
-            if(type.fields[i].type.kind == "NamedType"){
-                if(isNativeType(type.fields[i].type) != null){
-                    newType = type.fields[i].type.name.value
+            if(!type.match(/\[(.*?)\]/)){
+                if(isNativeType(type) != null){
+                    newType = type
                 }else{
-                    newType = `${type.fields[i].type.name.value}Input`
+                    newType = `${type}Input`
                 }
                 
-            }else if(type.fields[i].type.kind == "ListType"){
-                if(isNativeType(type.fields[i].type.type) != null){
-                    newType = `[${type.fields[i].type.type.name.value}]`;
+            }else{
+                let arrType = type.match(/\[(.*?)\]/)[1];
+
+                if(isNativeType(arrType) != null){
+                    newType = `[${arrType}]`;
                 }else{
-                    newType = `[${type.fields[i].type.type.name.value}Input]`
+                    newType = `[${arrType}Input]`
                 }
                 
 
             }
-
-            outputFields[type.fields[i].name] = newType
-        }
-
-        return schemaComposer.createInputTC({
-            name: type.name, 
-            fields: outputFields
-        })
-
+            return newType;
 
     }
 
     return {
         inputTypeDefs: `directive @input on OBJECT | FIELD_DEFINITION `,
-        inputTransformer: (schema) => {
-
-            let types = objectValues(schema._typeMap).filter((a) => a instanceof GraphQLObjectType).map((x) => ({
-                ...x,
-                fields: objectValues(x.getFields()) 
-            }))
+        inputTransformer: (schema : SchemaComposer<any>) => {
             
-            types = types.filter((a) => {
-                let fieldDirectives = a.fields
-                    .filter((a) => a.astNode)
-                    .map((x) =>{
-                       return x.astNode.directives
-                    }).map((x) => {
-                    return x.map(y => y.name && y.name.value)
-                    }).map((x) => x.map((y) => y == 'input').indexOf(true) > -1)
+            schemaComposer.merge(schema)
 
-                    return fieldDirectives.indexOf(true) > -1
-            })
-            
-            let inputFields = types.map((x) => {
-                return {
-                    name: `${x.name}Input`,
-                    fields: x.fields.filter((a) => a.astNode).map((x) => {
-                        return {
-                            name: x.name,
-                            type: x.astNode.type,
-                            directives: x.astNode.directives
+            let types = [];
+            if(!schema.types) console.log(schema);
+            schemaComposer.types.forEach((val, key, map) => {
+                if(typeof(key) == 'string'){
+                    if(schemaComposer.isObjectType(key)){
+                        let obj = schema.getOTC(key)
+                        let _fields = obj.getFields();
+                        let fields = [];
+                        for(var k in _fields){
+                            fields.push({
+                                name: k,
+                                type: _fields[k].type.getTypeName(),
+                                directives: obj.getFieldDirectives(k).map((x) => x.name)
+                            })
                         }
-                    }).filter((a) => a.directives.map((x) => x.name && x.name.value).indexOf('input') > -1)
+                        types.push({ 
+                            name: key, 
+                            fields: fields
+                        })
+                    }
                 }
             })
 
-            let newTypes = inputFields.map(makeInput)
-          
-            let _schema = schemaComposer.buildSchema(); 
-            
-            return mergeSchemas({schemas:[schema, _schema]})
+        
+
+            types = types.filter((a) => a.fields.map((x) => x.directives.indexOf('input') > -1).indexOf(true) > - 1);
+            console.log("INPUT TYPES", JSON.stringify(types));
+
+            let newTypes = types.map((x) => {
+                
+                    let inputType = `
+                    input ${x.name}Input{
+                        ${x.fields.filter((a) => a.directives.indexOf('input') > -1).map((x) => {
+                            let type = `${x.name} : ${convertInput(x.type)}`
+                            if(x.directives) type += " " + x.directives.map((x) => `@${x}`).join(' ')
+                            return type;
+                        }).join(`\n`)}
+                    }   
+                    `
+
+                    let fields = {};
+                    x.fields.filter((a) => a.directives.indexOf('input') > -1).forEach((field) => {
+                        fields[field.name] = {
+                            type: convertInput(field.type),
+                            directives: field.directives
+                        }
+                    })
+
+                    return schemaComposer.createInputTC({
+                        name: `${x.name}Input`,
+                        fields: fields
+                    })
+
+
+            })
+ 
+           return newTypes;
         }
     }
 }

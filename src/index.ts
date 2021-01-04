@@ -66,7 +66,9 @@ export class FlowProvider{
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
 
         console.log("Adding type defs")
-        let resolvers = schemaComposer.getResolveMethods()
+
+        const schemaFactory = schemaComposer;
+        let resolvers = schemaFactory.getResolveMethods()
 
         let typeDefs = [
             `type Query {
@@ -78,7 +80,7 @@ export class FlowProvider{
             this.typeDefs
         ].join(`\n`)
 
-        schemaComposer.addTypeDefs(typeDefs)
+        schemaFactory.addTypeDefs(typeDefs)
 
         let types = [
             `scalar Upload`,
@@ -87,7 +89,7 @@ export class FlowProvider{
             crudTypeDefs, 
             uploadTypeDefs ].join(`\n`)
 
-        let typeMap = schemaComposer.types;
+        let typeMap = schemaFactory.types;
 
         
         typeMap.forEach((val, key) => {
@@ -96,13 +98,19 @@ export class FlowProvider{
             }else{
                 //console.log(key)
             }
-          
+        })
+
+        let inputScheme = inputTransformer(schemaFactory)
+        let crudScheme = crudTransformer(schemaFactory)
+        
+        inputScheme.forEach((schema) => {
+            types += '\n' + schema.toSDL();
         })
 
         this.schemaOpts = {
             typeDefs: types,
             resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers),
-            schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
+          //  schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
         }
 
         console.log(this.schemaOpts)
