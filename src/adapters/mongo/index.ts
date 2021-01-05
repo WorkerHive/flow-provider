@@ -1,42 +1,43 @@
+import { GraphQLObjectType } from "graphql-compose/lib/graphql";
+
 const { ObjectId } = require("mongodb");
 const {  objectFlip, mapForward, mapBack, mapQuery } = require("../../utils/flow-query");
 const BaseAdapter = require("../base-adapter");
 
-class MongoAdapter extends BaseAdapter{
+export default class MongoAdapter extends BaseAdapter{
 
     constructor(db){
         super();
         this.client = db;
     }
 
-    getProvider(bucket, typeDef, provides){
+    getProvider(bucket : any, typeDef : GraphQLObjectType, provides : any){
         return async (search) => {
+            console.log(provides);
+
             for(var k in search){
-                search[k] = (typeDef._fields[k].type == "ID") ?  ObjectId(search[k]) : search[k];
+                search[k] = (typeDef.getFields()[k].type.toString() == "ID") ?  ObjectId(search[k]) : search[k];
             }
             let query = mapQuery(objectFlip(provides), search)
             let result = await this.client.collection(`${bucket.name}`).findOne(query)
-            console.log("Get Result", result, query, bucket)
             return mapForward(typeDef, provides, result)
         }
     }
 
-    getAllProvider(bucket, typeDef, provides){
+    getAllProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async () => {
             let results = await this.client.collection(`${bucket.name}`).find().toArray()
             return results.map((x) => mapForward(typeDef, provides, x));
         }
     }
 
-    updateProvider(bucket, typeDef, provides){
+    updateProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async(query, obj) => {
-            console.log("Update provider", query)
             for(var k in query){
-                query[k] = (typeDef._fields[k].type == "ID") ? ObjectId(query[k]) : query[k]
+                query[k] = (typeDef.getFields()[k].type.toString() == "ID") ? ObjectId(query[k]) : query[k]
             }
 
             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
-            console.log("PRovides", provides, obj)
             let inputObject = mapBack(provides, obj)
 
             for(var key in inputObject){
@@ -48,13 +49,13 @@ class MongoAdapter extends BaseAdapter{
         }
     }
 
-    deleteProvider(bucket, typeDef, provides){
+    deleteProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async(id) => {
             this.client.collection(`${bucket.name}`).deleteOne({id: id})
         }
     }
 
-    addProvider(bucket, typeDef, provides){
+    addProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async(newObject) => {
             let  obj = mapBack(provides, newObject)
             console.log("New object add provider", obj, provides, newObject)
@@ -63,5 +64,3 @@ class MongoAdapter extends BaseAdapter{
         }
     }
 }
-
-module.exports = MongoAdapter;

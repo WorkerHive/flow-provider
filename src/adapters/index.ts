@@ -1,6 +1,6 @@
 import { ObjectTypeComposer } from "graphql-compose";
 
-const MongoAdapter = require('../adapters/mongo')
+import MongoAdapter from '../adapters/mongo'
 const MSSQLAdapter = require('../adapters/mssql');
 
 const { objectValues } = require('../transforms/utils');
@@ -108,7 +108,6 @@ export default class MergedAdapter extends BaseAdapter{
         console.log(actions.length, supporting.length)
         return (query) => {
 
-            console.log("Querying ", this.type, query)
             return Promise.all(actions.map((x) => x(query))).then((results) => {
                 let r = {}
                 results.forEach(item => {

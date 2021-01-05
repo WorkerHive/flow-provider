@@ -34,11 +34,12 @@ const objectFlip = (obj) => {
 
     let fields = objectValues(typeDef._fields).map((x) => ({name: x.name, type: x.type}))
 
+    if(obj){
+        for(var k in spec){
+            out[spec[k]] = obj[k];
+        }
 
-    for(var k in spec){
-        out[spec[k]] = obj[k];
     }
-
     return out
 }
 
