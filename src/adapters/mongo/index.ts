@@ -59,8 +59,13 @@ export default class MongoAdapter extends BaseAdapter{
     }
 
     deleteProvider(bucket, typeDef : GraphQLObjectType, provides){
-        return async(id) => {
-            this.client.collection(`${bucket.name}`).deleteOne({id: id})
+        return async(query) => {
+            for(var k in query){
+                query[k] = (typeDef.getFields()[k].type.toString() == "ID") ? ObjectId(query[k]) : query[k]
+            }
+            let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
+            console.log(q)
+            return await this.client.collection(`${bucket.name}`).deleteOne(q)
         }
     }
 

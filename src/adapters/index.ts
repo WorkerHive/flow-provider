@@ -143,6 +143,8 @@ export default class MergedAdapter extends BaseAdapter{
                 
                     let r2 = results;
                     console.log(r, r2, refs)
+
+                    
                     return unionWith(r, r2, (arrVal, othVal) => {
                         for(var k in refs){
                             console.log("Checking ref", k)
@@ -273,8 +275,35 @@ export default class MergedAdapter extends BaseAdapter{
     }
 
     deleteProvider(){
-        return (id) => {
+        const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
+            return adapter.deleteProvider({name:bucket}, this.type, provides);
+        })
 
+        //TODO write protect external dbs by default so we dont go deleting waterfalls
+
+        return (query) => {
+
+            let removedCount = 0;
+            return Promise.all(actions.map((action) => {
+                return action(query)
+            })).then((result) => {
+                result.forEach(item => {
+                    removedCount += item.result.n;
+                })
+                
+                console.log(result);
+                return Promise.all(supporting.map((sAction) => {
+                    return sAction(query)
+                })).then((otherResult) => {
+                    otherResult.forEach(item => {
+                        removedCount += item.result.n;
+                    })
+                })
+            }).then((r) => {
+                console.log(r)
+
+                return removedCount > 0; //TODO actually plumb this in
+            })
         }
     }
 
