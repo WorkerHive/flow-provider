@@ -46,7 +46,7 @@ export default class MongoAdapter extends BaseAdapter{
                 }
             }
             if(Object.keys(inputObject).length > 0) {
-                let result = await this.client.collection(`${bucket.name}`).findOneAndUpdate(q, {$set: inputObject}, {new: true, returnOriginal: false})
+                let result = await this.client.collection(`${bucket.name}`).findOneAndUpdate(q, {$set: inputObject}, {upsert: true, new: true, returnOriginal: false})
                 console.log(result)
                 if(result.value){
                     return mapForward(typeDef, provides, result.value);
