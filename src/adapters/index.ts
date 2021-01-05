@@ -174,12 +174,24 @@ export default class MergedAdapter extends BaseAdapter{
         })
 
         return (id, update) => {
+
+            console.log("Update", this.type, id, update);
             return Promise.all(actions.map((action) => {
                 return action(id, update)
             })).then((result) => {
+                let output = {};
+                result.forEach((item) => {
+                    output = Object.assign({}, output, item)
+                })
                 return Promise.all(supporting.map((sAction) => {
                     return sAction(id, update)
-                }))
+                })).then((res) => {
+                    let output2 = {};
+                    res.forEach((item) => {
+                        output2 = Object.assign({}, output2, item);
+                    })
+                    return Object.assign({}, output, output2)
+                })
             })
         }
         

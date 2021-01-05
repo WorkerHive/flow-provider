@@ -33,6 +33,8 @@ export default class FlowConnector{
         let batches = path.getBatched();
         let adapter = new MergedAdapter(objectType, this.stores, batches)
         let result = await adapter.updateProvider()(query, update)
+
+        console.log("PUT RESULT", result);
         return result;
 
     }

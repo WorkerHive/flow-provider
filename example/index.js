@@ -40,8 +40,7 @@ let flowDefs = {
         name: "jsis:MergedTypes:JobName",
         weirdField: "jam:Max:field",
         refs: {
-            "id": ["app:MergedType:_id"],
-            "name": ["jam:Max:name"]
+            "id": ["app:MergedType:_id"]
         }
     },
     SensitiveType: {

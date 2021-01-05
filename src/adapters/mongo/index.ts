@@ -39,13 +39,22 @@ export default class MongoAdapter extends BaseAdapter{
 
             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
             let inputObject = mapBack(provides, obj)
-
+            console.log("UPDATE INPUT OBJ", provides, inputObject, obj)
             for(var key in inputObject){
                 if(!inputObject[key]){
                     delete inputObject[key]
                 }
             }
-            return await this.client.collection(`${bucket.name}`).updateOne(q, {$set: inputObject})
+            if(Object.keys(inputObject).length > 0) {
+                let result = await this.client.collection(`${bucket.name}`).findOneAndUpdate(q, {$set: inputObject}, {new: true, returnOriginal: false})
+                console.log(result)
+                if(result.value){
+                    return mapForward(typeDef, provides, result.value);
+                }
+            }else{
+                let res = await this.client.collection(`${bucket.name}`).findOne(q)
+                return mapForward(typeDef, provides, res);
+            }
         }
     }
 
