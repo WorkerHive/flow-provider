@@ -127,7 +127,6 @@ export default function inputTransform (){
         
 
             types = types.filter((a) => a.fields.map((x) => x.directives.indexOf('input') > -1).indexOf(true) > - 1);
-            console.log("INPUT TYPES", JSON.stringify(types));
 
             let newTypes = types.map((x) => {
                 

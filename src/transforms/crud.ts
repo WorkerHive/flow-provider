@@ -18,7 +18,6 @@ export default function crudTransformer (){
 
             let dirs : Array<NamedTypeComposer<any>> = findTypesWithDirective(schema.types, 'crud')
 
-            console.log("Found", dirs.length)
             for(var i = 0; i < dirs.length; i++){
                 
             

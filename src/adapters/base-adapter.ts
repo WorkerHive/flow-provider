@@ -1,4 +1,11 @@
-class BaseAdapter {
+import { ObjectTypeComposer } from "graphql-compose";
+import { GraphQLObjectType } from "graphql-compose/lib/graphql";
+
+export default class BaseAdapter {
+
+    public type: GraphQLObjectType;
+    public storeList: any;
+    public paths: any;
 
     updateProvider(bucket, typeDef, provides){
 

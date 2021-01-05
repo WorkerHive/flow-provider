@@ -16,8 +16,6 @@ export default function uploadTransformer (){
         uploadTypeDefs: `directive @upload on OBJECT`,
         uploadTransformer: (schema : SchemaComposer<any>) => {
 
-            console.log(schema);
-
             schemaComposer.merge(schema);
 
             let dirs : Array<NamedTypeComposer<any>> = findTypesWithDirective(schema.types, 'upload')

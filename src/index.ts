@@ -3,7 +3,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema'
 import { mergeResolvers } from '@graphql-tools/merge'
 import { GraphQLDirective, GraphQLDirectiveConfig } from 'graphql-compose/lib/graphql';
 import { GraphQLSchema } from 'graphql'
-import { schemaComposer } from 'graphql-compose';
+import { SchemaComposer, schemaComposer } from 'graphql-compose';
 
 import FlowConnector from './connectors/flow';
 import StoreManager from './stores';
@@ -24,10 +24,7 @@ import {
     UploadTranform
 } from './transforms'
 
-
-import FlowPath from './flow-path'
 import {merge} from 'lodash';
-import { MergedAdapter } from './adapters'
 import resolvers from './resolver-base'
 
 export class FlowProvider{
@@ -45,6 +42,8 @@ export class FlowProvider{
 
     public schema: GraphQLSchema;
     public schemaOpts: any;
+
+    private schemaFactory: SchemaComposer<any>;
 
     constructor(typeDefs, flowDefs, userResolvers, ){
         this.stores = new StoreManager();
@@ -67,8 +66,8 @@ export class FlowProvider{
 
         console.log("Adding type defs")
 
-        const schemaFactory = schemaComposer;
-        let resolvers = schemaFactory.getResolveMethods()
+        this.schemaFactory = schemaComposer;
+        let resolvers = this.schemaFactory.getResolveMethods()
 
         let typeDefs = [
             `type Query {
@@ -83,7 +82,7 @@ export class FlowProvider{
             this.typeDefs
         ].join(`\n`)
 
-        schemaFactory.addTypeDefs(typeDefs)
+        this.schemaFactory.addTypeDefs(typeDefs)
 
         let types = [
             inputTypeDefs, 
@@ -91,12 +90,12 @@ export class FlowProvider{
             crudTypeDefs, 
             uploadTypeDefs ].join(`\n`)
 
-        inputTransformer(schemaFactory)
-        crudTransformer(schemaFactory)
-        uploadTransformer(schemaFactory)
-        configurableTransformer(schemaFactory)
+        inputTransformer(this.schemaFactory)
+        crudTransformer(this.schemaFactory)
+        uploadTransformer(this.schemaFactory)
+        configurableTransformer(this.schemaFactory)
 
-        let typeMap = schemaFactory.types;
+        let typeMap = this.schemaFactory.types;
 
         typeMap.forEach((val, key) => {
             if(typeof(key) == "string"){
@@ -108,17 +107,17 @@ export class FlowProvider{
 
         this.schemaOpts = {
             typeDefs: types,
-            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, schemaFactory.getResolveMethods()),
+            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, this.schemaFactory.getResolveMethods()),
           //  schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
         }
 
-        console.log(this.schemaOpts)
 
         this.schema = makeExecutableSchema(this.schemaOpts)
+
     }
 
     applyInit(fn){
-        this.connector = new FlowConnector(this.schema.getTypeMap(), this.flowDefs, this.stores);
+        this.connector = new FlowConnector(this.schemaFactory, this.flowDefs, this.stores);
         this.server = fn({
             schema: this.schemaOpts,
             context: {

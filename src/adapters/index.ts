@@ -1,35 +1,21 @@
+import { ObjectTypeComposer } from "graphql-compose";
+
 const MongoAdapter = require('../adapters/mongo')
 const MSSQLAdapter = require('../adapters/mssql');
 
 const { objectValues } = require('../transforms/utils');
 const { objectFlip } = require('../utils/flow-query');
-const BaseAdapter = require('./base-adapter');
+import BaseAdapter from './base-adapter'
 const { merge, isEqual, unionWith } = require('lodash')
 
-class MergedAdapter extends BaseAdapter{
-    constructor(type, storeList, paths){
+export default class MergedAdapter extends BaseAdapter{
+    constructor(type : ObjectTypeComposer<any>, storeList, paths){
         super();
-        this.type = type
+        this.type = type.getType();
         this.storeList = storeList;
         this.paths = paths;
     }
 
-
-    mergeActions(bucket, type, get_provider){
-        let actions = [];
-        for(var k in this.paths){
-                if(k !== 'refs'){
-                    let pipe = new MongoAdapter(this.storeList.getStore(k).db)
-                    for(var col in this.paths[k]){
-                        let provider = get_provider(pipe, col, this.type, objectFlip(this.paths[k][col]))
-                        actions.push(provider)
-                    }
-                }
-        
-        }
-
-        return actions;
-    }
 
     sortActions(type){
         let refs = this.paths.refs || {};
@@ -43,7 +29,8 @@ class MergedAdapter extends BaseAdapter{
             for(var path in paths[store]){
                 let map = objectFlip(Object.assign({}, paths[store][path]))
 
-                let refKey = !Object.keys(refs).length > 0 || Object.keys(refs).map((x) => {
+
+                let refKey = !(Object.keys(refs).length > 0) || Object.keys(refs).map((x) => {
                     return Object.keys(map).indexOf(x)
                 }).filter((a) => a > -1).length > 0
 
@@ -206,8 +193,6 @@ class MergedAdapter extends BaseAdapter{
 
         const { refs } = this.paths;
 
-        console.log(primaryActions, supportingActions)
-
         let actions = [];
         let supporting = [];
 
@@ -276,8 +261,10 @@ class MergedAdapter extends BaseAdapter{
 
     }
 
-}
+    deleteProvider(){
+        return (id) => {
 
-module.exports = {
-    MergedAdapter
+        }
+    }
+
 }
