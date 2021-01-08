@@ -1,6 +1,6 @@
 
 const { ApolloServer, makeExecutableSchema } = require('apollo-server')
-const {FlowProvider, MongoStore, MSSQLStore} = require('..')
+const { FlowConnector, MongoStore, MSSQLStore} = require('..')
 const { schemaComposer } = require('graphql-compose');
 
 const typeDefs = `
@@ -60,19 +60,11 @@ let resolvers = {
     }
 }
 
-let flowProvider = new FlowProvider(typeDefs, flowDefs, resolvers)
+let flowProvider = new FlowConnector(flowDefs, resolvers)
 
-flowProvider.applyInit((opts) => {
+let config = flowProvider.getConfig();
+console.log("CONFIG", config)
 
-    const schema = makeExecutableSchema({
-        ...opts.schema,
-    })
-
-    return new ApolloServer({
-        schema,
-        context: opts.context
-    })
-})
 
 console.log(flowProvider.stores.getTypes())
 

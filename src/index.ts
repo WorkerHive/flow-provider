@@ -7,7 +7,7 @@ import { MongoStore, MSSQLStore } from './stores'
 
 import { BaseConnector, BaseGraph } from '@workerhive/graph';
 //Replace below
-
+import { transform as setupConfig } from './transforms/integration'
 import {merge} from 'lodash';
 import resolvers from './resolver-base'
 import MergedAdapter from './adapters';
@@ -37,20 +37,20 @@ export class FlowConnector extends BaseConnector{
         this.flowResolvers = merge(resolvers, userResolvers)
     }
 
+    getConfig(){
+        //Get typedefs and resolvers for integration
+        return setupConfig(this.schemaFactory)
+    }
+
     setParent(parent : any){
-        console.log("Set parent")
         this.parent = parent;
-        console.log("Initial schema", parent.typeRegistry.sdl)
-        this.schemaFactory.addTypeDefs(parent.typeRegistry.sdl)
+
+        if(parent.typeRegistry.sdl) this.schemaFactory.addTypeDefs(parent.typeRegistry.sdl)
 
         this.parent.on('schema_update', (schema) => {
-         //   this.schemaFactory.clear()
-         console.log("Update schema")
          this.schemaFactory = schemaComposer.clone();
-
          this.schemaFactory.addTypeDefs(parent.typeRegistry.sdl);
         })
-       // if(this.parent.schema) this.schemaFactory.merge(this.parent.schema)
     }
 
     async create(type, object){

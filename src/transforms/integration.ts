@@ -1,18 +1,11 @@
-/*
-import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
-import { isNativeGraphQLType } from './native-symbols'
-import { objectValues, compact } from './utils'
-import { GraphQLSchema, GraphQLObjectType, isListType, GraphQLID, GraphQLBoolean, isNonNullType, GraphQLType, GraphQLList, GraphQLNonNull, GraphQLNamedType, GraphQLString, GraphQLArgument, GraphQLFieldConfigArgumentMap, GraphQLDirective, GraphQLDirectiveConfig, GraphQLInputObjectType } from 'graphql'
-import { findTypesWithDirective } from "../utils"
-import { camelCase }  from "camel-case"
-import { NamedTypeComposer, schemaComposer, SchemaComposer }  from 'graphql-compose'
+
+import { schemaComposer, SchemaComposer }  from 'graphql-compose'
+import { GraphContext } from '@workerhive/graph'
+import { FlowConnector } from '..';
 let typeMap;
 
 
-export default function integrationTransformer (){
-    return {
-        integrationTypeDefs: `directive @store on OBJECT \n directive @integration on OBJECT`,
-        integrationTransformer: (schema : SchemaComposer<any>) => {
+export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers: any} => {
 
             schemaComposer.merge(schema);
 
@@ -82,8 +75,8 @@ export default function integrationTransformer (){
                     args: {
                         integrationMap: 'IntegrationMapInput'
                     },
-                    resolve: async (parent, args, context) => {
-                        return await context.connections.flow.add('IntegrationMap', args.integrationMap)
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.create('IntegrationMap', args.integrationMap)
                     }
                 },
                 addIntegrationStore: {
@@ -91,9 +84,9 @@ export default function integrationTransformer (){
                     args: {
                         integrationStore: 'IntegrationStoreInput'
                     },
-                    resolve: async (parent, args, context) => {
-                        context.connections.flow.stores.setupStore(args.integrationStore)
-                        return await context.connections.flow.add('IntegrationStore', args.integrationStore)
+                    resolve: async (parent, args, context : GraphContext) => {
+                        (context.connector as FlowConnector).stores.setupStore(args.integrationStore)
+                        return await context.connector.create('IntegrationStore', args.integrationStore)
                     }
                 },
                 updateIntegrationMap: {
@@ -102,9 +95,8 @@ export default function integrationTransformer (){
                         id: 'String',
                         integrationMap: 'IntegrationMapInput'
                     },
-                    resolve: async (parent, args, context) => {
-                        console.log('Update integration map', args)
-                        return await context.connections.flow.put('IntegrationMap', {id: args.id}, args.integrationMap);
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.update('IntegrationMap', {id: args.id}, args.integrationMap);
                     }
                 },
                 updateIntegrationStore: {
@@ -113,8 +105,8 @@ export default function integrationTransformer (){
                         id: 'ID',
                         integrationStore: 'IntegrationStoreInput'
                     },
-                    resolve: async (parent, args, context) => {
-                        return await context.connections.flow.put('IntegrationStore', {id: args.id}, args.integrationStore)
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.update('IntegrationStore', {id: args.id}, args.integrationStore)
                     }
                 },
                 deleteIntegrationMap: {
@@ -122,8 +114,8 @@ export default function integrationTransformer (){
                     args: {
                         id: 'String'
                     }, 
-                    resolve: async (parent, args, context) => {
-                        return await context.connections.flow.delete('IntegrationMap', {id: args.id})
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.delete('IntegrationMap', {id: args.id})
                     }
                 },
                 deleteIntegrationStore: {
@@ -131,9 +123,9 @@ export default function integrationTransformer (){
                     ags: {
                         id: 'ID',
                     },
-                    resolve: async (parent, args, context) => {
+                    resolve: async (parent, args, context : GraphContext) => {
                         
-                        return await context.connections.flow.delete('IntegrationStore', {id: args.id})
+                        return await context.connector.delete('IntegrationIntegrationStore', {id: args.id})
                     }
                 }
             })
@@ -141,14 +133,14 @@ export default function integrationTransformer (){
             schemaComposer.Query.addFields({
                 storeTypes: {
                     type: 'StoreType',
-                    resolve: (parent, args, context) => {
-                        return context.connections.flow.stores.getTypes();
+                    resolve: (parent, args, context : GraphContext) => {
+                        return (context.connector as FlowConnector).stores.getTypes();
                     }
                 },
                 stores: {
                     type: 'JSON',
                     resolve: (parent, args, context) => {
-                        return context.connections.flow.stores.getAll();
+                        return context.connector.stores.getAll();
                     }
                 },
                 storeLayout: {
@@ -157,7 +149,7 @@ export default function integrationTransformer (){
                         name: 'String'
                     },
                     resolve: async (parent, args, context) => {
-                        return await context.connections.flow.stores.get(args.name).getBucketGroups();
+                        return await context.connector.stores.get(args.name).getBucketGroups();
                     }
                 },
                 integrationMap: {
@@ -166,13 +158,13 @@ export default function integrationTransformer (){
                         id: 'String'
                     },
                     resolve: async (parent, args, context) => {
-                        return await context.connections.flow.get('IntegrationMap', {id: args.id})
+                        return await context.connector.get('IntegrationMap', {id: args.id})
                     }
                 },
                 integrationMaps: {
                     type: '[IntegrationMap]',
                     resolve: async (parent, args, context) => {
-                        return await context.connections.flow.getAll('IntegrationMap')
+                        return await context.connector.getAll('IntegrationMap')
                     }
                 },
                 integrationStore: {
@@ -181,19 +173,18 @@ export default function integrationTransformer (){
                         id: 'ID'
                     },
                     resolve: async (parent, args, context) => {
-                        return await context.connections.flow.get('IntegrationStore', {id: args.id})
+                        return await context.connector.get('IntegrationStore', {id: args.id})
                     }
                 },
                 integrationStores: {
                     type: '[IntegrationStore]',
                     resolve: async (parent, args, context) => {
-                        return await context.connections.flow.getAll('IntegrationStore')
+                        return await context.connector.getAll('IntegrationStore')
                     }
                 }
             })
-            return schemaComposer.buildSchema();
-        }
-    }
-}
 
-*/
+            let sdl = schemaComposer.toSDL();
+            let resolvers = schemaComposer.getResolveMethods();
+            return { types: sdl, resolvers: resolvers}
+        }
