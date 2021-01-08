@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MongoStore | @workerhive/flow-provider</title>
+	<title>MSSQLStore | @workerhive/flow-provider</title>
 	<meta name="description" content="Documentation for @workerhive/flow-provider">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@workerhive/flow-provider</a>
 				</li>
 				<li>
-					<a href="mongostore.html">MongoStore</a>
+					<a href="mssqlstore.html">MSSQLStore</a>
 				</li>
 			</ul>
-			<h1>Class MongoStore</h1>
+			<h1>Class MSSQLStore</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 						<span class="tsd-signature-type">BaseStore</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">MongoStore</span>
+								<span class="target">MSSQLStore</span>
 							</li>
 						</ul>
 					</li>
@@ -85,27 +85,31 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="mongostore.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="mssqlstore.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="mongostore.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="mongostore.html#db" class="tsd-kind-icon">db</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mongostore.html#description" class="tsd-kind-icon">description</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mongostore.html#storename" class="tsd-kind-icon">store<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mongostore.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="mssqlstore.html#adapter" class="tsd-kind-icon">adapter</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="mssqlstore.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="mssqlstore.html#db" class="tsd-kind-icon">db</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mssqlstore.html#description" class="tsd-kind-icon">description</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mssqlstore.html#storename" class="tsd-kind-icon">store<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="mssqlstore.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mongostore.html#getadapter" class="tsd-kind-icon">get<wbr>Adapter</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mongostore.html#isalive" class="tsd-kind-icon">is<wbr>Alive</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mongostore.html#setup" class="tsd-kind-icon">setup</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mongostore.html#start" class="tsd-kind-icon">start</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mongostore.html#stop" class="tsd-kind-icon">stop</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#bucketlayout" class="tsd-kind-icon">bucket<wbr>Layout</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#getadapter" class="tsd-kind-icon">get<wbr>Adapter</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#getbucketgroups" class="tsd-kind-icon">get<wbr>Bucket<wbr>Groups</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#isalive" class="tsd-kind-icon">is<wbr>Alive</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#layout" class="tsd-kind-icon">layout</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#setup" class="tsd-kind-icon">setup</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="mssqlstore.html#stop" class="tsd-kind-icon">stop</a></li>
 							</ul>
 						</section>
 					</div>
@@ -117,13 +121,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Mongo<wbr>Store<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mongostore.html" class="tsd-signature-type" data-tsd-kind="Class">MongoStore</a></li>
+						<li class="tsd-signature tsd-kind-icon">new MSSQLStore<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mssqlstore.html" class="tsd-signature-type" data-tsd-kind="Class">MSSQLStore</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L13">src/stores/mongo.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L13">src/stores/mssql.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -132,13 +136,23 @@
 									<h5>config: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="mongostore.html" class="tsd-signature-type" data-tsd-kind="Class">MongoStore</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="mssqlstore.html" class="tsd-signature-type" data-tsd-kind="Class">MSSQLStore</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="adapter" class="tsd-anchor"></a>
+					<h3>adapter</h3>
+					<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">default</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L13">src/stores/mssql.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="config" class="tsd-anchor"></a>
 					<h3>config</h3>
@@ -155,43 +169,66 @@
 					<div class="tsd-signature tsd-kind-icon">db<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L13">src/stores/mongo.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L12">src/stores/mssql.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="description" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> description</h3>
-					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &quot;MongoDB Server&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &quot;Microsoft SQL Server&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L9">src/stores/mongo.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L9">src/stores/mssql.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="storename" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> store<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">store<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &quot;MongoDB&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">store<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &#x27;MSSQL&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L8">src/stores/mongo.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L8">src/stores/mssql.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="type" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> type</h3>
-					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &quot;mongo&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> = &quot;mssql&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L7">src/stores/mongo.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L7">src/stores/mssql.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bucketlayout" class="tsd-anchor"></a>
+					<h3>bucket<wbr>Layout</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bucket<wbr>Layout<span class="tsd-signature-symbol">(</span>bucketName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L66">src/stores/mssql.ts:66</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>bucketName: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getadapter" class="tsd-anchor"></a>
 					<h3>get<wbr>Adapter</h3>
@@ -202,10 +239,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mongo.ts#L27">src/stores/mongo.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L21">src/stores/mssql.ts:21</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">default</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getbucketgroups" class="tsd-anchor"></a>
+					<h3>get<wbr>Bucket<wbr>Groups</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Bucket<wbr>Groups<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L43">src/stores/mssql.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -227,19 +281,36 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="setup" class="tsd-anchor"></a>
-					<h3>setup</h3>
+					<a name="layout" class="tsd-anchor"></a>
+					<h3>layout</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">setup<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">layout<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/base.ts#L17">src/stores/base.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L49">src/stores/mssql.ts:49</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setup" class="tsd-anchor"></a>
+					<h3>setup</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">setup<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/WorkerHive/flow-provider/blob/6a83769/src/stores/mssql.ts#L25">src/stores/mssql.ts:25</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -292,51 +363,63 @@
 					<li class=" tsd-kind-class">
 						<a href="flowconnector.html" class="tsd-kind-icon">Flow<wbr>Connector</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="mssqlstore.html" class="tsd-kind-icon">MSSQLStore</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="mongostore.html" class="tsd-kind-icon">Mongo<wbr>Store</a>
+						<a href="mssqlstore.html" class="tsd-kind-icon">MSSQLStore</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="mongostore.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="mssqlstore.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="mongostore.html#config" class="tsd-kind-icon">config</a>
+								<a href="mssqlstore.html#adapter" class="tsd-kind-icon">adapter</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="mongostore.html#db" class="tsd-kind-icon">db</a>
+								<a href="mssqlstore.html#config" class="tsd-kind-icon">config</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="mssqlstore.html#db" class="tsd-kind-icon">db</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="mongostore.html#description" class="tsd-kind-icon">description</a>
+								<a href="mssqlstore.html#description" class="tsd-kind-icon">description</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="mongostore.html#storename" class="tsd-kind-icon">store<wbr>Name</a>
+								<a href="mssqlstore.html#storename" class="tsd-kind-icon">store<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="mongostore.html#type" class="tsd-kind-icon">type</a>
+								<a href="mssqlstore.html#type" class="tsd-kind-icon">type</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="mongostore.html#getadapter" class="tsd-kind-icon">get<wbr>Adapter</a>
+								<a href="mssqlstore.html#bucketlayout" class="tsd-kind-icon">bucket<wbr>Layout</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="mongostore.html#isalive" class="tsd-kind-icon">is<wbr>Alive</a>
+								<a href="mssqlstore.html#getadapter" class="tsd-kind-icon">get<wbr>Adapter</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="mongostore.html#setup" class="tsd-kind-icon">setup</a>
+								<a href="mssqlstore.html#getbucketgroups" class="tsd-kind-icon">get<wbr>Bucket<wbr>Groups</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="mongostore.html#start" class="tsd-kind-icon">start</a>
+								<a href="mssqlstore.html#isalive" class="tsd-kind-icon">is<wbr>Alive</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="mongostore.html#stop" class="tsd-kind-icon">stop</a>
+								<a href="mssqlstore.html#layout" class="tsd-kind-icon">layout</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="mssqlstore.html#setup" class="tsd-kind-icon">setup</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="mssqlstore.html#start" class="tsd-kind-icon">start</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="mssqlstore.html#stop" class="tsd-kind-icon">stop</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class">
+						<a href="mongostore.html" class="tsd-kind-icon">Mongo<wbr>Store</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
