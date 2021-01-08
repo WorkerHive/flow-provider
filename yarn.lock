@@ -320,12 +320,27 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.2.1.tgz#7513d7a769e3f97958de799b5b49874425ae3396"
   integrity sha512-Zj1z6AyS+vqV6Hfi7ngCjFGdHV5EwZNIHo6QfFTNe9PyW+zBU1zJ9BiOW1pmUEq950RC4+Dym6flyA/61/vhyw==
 
-"@workerhive/graph@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.7.tgz#4305915da377a41973958c0a80b20103d8ccd82b"
-  integrity sha512-gP2BhOWlqt2JZHI/nFhQW+lhUTCR2eErGGbipxbkIqSIGXvf9EiMJtLJqRuhvZU5n4+Zs+LYR5zwilKBk3QEUA==
+"@workerhive/flow-provider@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@workerhive/flow-provider/-/flow-provider-1.2.3.tgz#fcc204f427d67f25113dac3c8c5693c1f7882951"
+  integrity sha512-Tj+1nqOmyObqpHmrK/ceYV7n1A/8McbkalIAoCgLcxwhr+s6X/PLH+xObtWG4tibwbEGTY+4R7t49co1aM+4Jw==
+  dependencies:
+    "@graphql-tools/merge" "^6.2.6"
+    "@graphql-tools/schema" "^7.1.2"
+    "@types/mongodb" "^3.6.3"
+    camel-case "^4.1.2"
+    file-extension "^4.0.5"
+    graphql-compose "^7.23.0"
+    graphql-type-json "^0.3.2"
+    lodash "^4.17.20"
+
+"@workerhive/graph@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.10.tgz#75ee5e3d185bc7f819076b5644b7da3503bec4c7"
+  integrity sha512-eUhxqzRxBUxtnzWGuP0ja3dwzDQ+ItHANVYj8xUxdixzXMws7KPZx3O5+0qvJK/n2canEwUnB0t+6YpA9RYYCA==
   dependencies:
     "@graphql-tools/schema" "^7.1.2"
+    "@workerhive/flow-provider" "^1.2.3"
     "@workerhive/mq" "^1.0.0"
     "@workerhive/pipelines" "^1.0.0"
     amqplib "^0.6.0"
