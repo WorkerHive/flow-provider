@@ -1,4 +1,3 @@
-import { Transform, mergeSchemas, gql, GraphQLUpload } from 'apollo-server'
 import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
 import { isNativeGraphQLType } from './native-symbols'
 import { objectValues, compact } from './utils'
@@ -45,7 +44,7 @@ export default function uploadTransformer (){
                     [uploadTag]:{
                         type: objectName,
                         args: {
-                            file: {type: GraphQLUpload}
+                            file: 'Upload' 
                         },
                         resolve: (parent, args, context) => {
                             //Add one of item

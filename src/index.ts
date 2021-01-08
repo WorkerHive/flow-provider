@@ -1,34 +1,19 @@
-import {  GraphQLUpload } from 'apollo-server'
-import { makeExecutableSchema } from '@graphql-tools/schema'
-import { mergeResolvers } from '@graphql-tools/merge'
-import { GraphQLDirective, GraphQLDirectiveConfig } from 'graphql-compose/lib/graphql';
 import { GraphQLSchema } from 'graphql'
 import { SchemaComposer, schemaComposer } from 'graphql-compose';
 
-import FlowConnector from './connectors/flow';
 import StoreManager from './stores';
 
 import { MongoStore, MSSQLStore } from './stores'
 
-const { 
-    InputDirective,
-    CRUDDirective,
-    ConfigurableDirective,
-    UploadDirective
-} = require('./directives')
-
-import { 
-    InputTransform,
-    CRUDTransform,
-    ConfigurableTransform,
-    UploadTranform,
-    IntegrationTransform
-} from './transforms'
+import { GraphConnector } from '@workerhive/graph';
+//Replace below
 
 import {merge} from 'lodash';
 import resolvers from './resolver-base'
+import MergedAdapter from './adapters';
+import FlowPath from './flow-path';
 
-export class FlowProvider{
+export class FlowConnector implements GraphConnector{
 
     public stores : StoreManager;
     public connector: FlowConnector;
@@ -46,90 +31,69 @@ export class FlowProvider{
 
     private schemaFactory: SchemaComposer<any>;
 
-    constructor(typeDefs, flowDefs, userResolvers, ){
+    constructor(typeDefs, flowDefs, userResolvers){
         this.stores = new StoreManager();
-        
         this.typeDefs = typeDefs;
         this.flowDefs = flowDefs;
         this.userResolvers = userResolvers;
-
         this.flowResolvers = merge(resolvers, userResolvers)
-
-        this.setupServer();
     }
 
+    async create(type, object){
+        let flowDef = this.flowDefs[type] || {};   
+        let objectType = this.schemaFactory.getOTC(type)
+        let path = new FlowPath(objectType, flowDef)
+        let batches = path.getBatched();
+        let adapter = new MergedAdapter(objectType, this.stores, batches)
+        let result =  await adapter.addProvider()(object)                            
+        return result;
+    }
 
-    setupServer(){
-        const { uploadTypeDefs, uploadTransformer } = UploadTranform()
-        const { inputTypeDefs, inputTransformer } = InputTransform()
-        const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
-        const { crudTypeDefs, crudTransformer } = CRUDTransform();
-        const { integrationTypeDefs, integrationTransformer } = IntegrationTransform();
+    async update(type, query, update){
+        let flowDef = this.flowDefs[type] || {};
+        let objectType = this.schemaFactory.getOTC(type)
+        let path = new FlowPath(objectType, flowDef)
+        let batches = path.getBatched();
+        let adapter = new MergedAdapter(objectType, this.stores, batches)
+        let result = await adapter.updateProvider()(query, update)
 
-        console.log("Adding type defs")
-
-        this.schemaFactory = schemaComposer;
-        let resolvers = this.schemaFactory.getResolveMethods()
-
-        let typeDefs = [
-            `type Query {
-                empty: String
-            }
-            type Mutation {
-                empty: String
-            }
-            type Subscription {
-                empty: String
-            }`,
-            this.typeDefs
-        ].join(`\n`)
-
-        this.schemaFactory.addTypeDefs(typeDefs)
-
-        let types = [
-            inputTypeDefs, 
-            configurableTypeDefs, 
-            crudTypeDefs, 
-            uploadTypeDefs ].join(`\n`)
-
-        inputTransformer(this.schemaFactory)
-        crudTransformer(this.schemaFactory)
-        uploadTransformer(this.schemaFactory)
-        configurableTransformer(this.schemaFactory)
-
-        integrationTransformer(this.schemaFactory)
-
-        let typeMap = this.schemaFactory.types;
-
-        typeMap.forEach((val, key) => {
-            if(typeof(key) == "string"){
-                types += `\n` + val.toSDL();
-            }else{
-                //console.log(key)
-            }
-        })
-
-        this.schemaOpts = {
-            typeDefs: types,
-            resolvers: merge({Upload: GraphQLUpload}, this.flowResolvers, this.schemaFactory.getResolveMethods()),
-          //  schemaTransforms: [ uploadTransformer, inputTransformer, configurableTransformer, crudTransformer ],
-        }
-
-
-        this.schema = makeExecutableSchema(this.schemaOpts)
+        console.log("PUT RESULT", result);
+        return result;
 
     }
 
-    applyInit(fn){
-        this.connector = new FlowConnector(this.schemaFactory, this.flowDefs, this.stores);
-        this.server = fn({
-            schema: this.schemaOpts,
-            context: {
-                connections: {
-                    flow: this.connector
-                }
-            }
-        })
+    async delete(type : string, query: object) : Promise<boolean> {
+        let flowDef = this.flowDefs[type] || {};
+        let objectType = this.schemaFactory.getOTC(type)
+
+        let path = new FlowPath(objectType, flowDef)
+        let batches = path.getBatched();
+        let adapter = new MergedAdapter(objectType, this.stores, batches)
+        let result = await adapter.deleteProvider()(query)
+        return result;
+    }
+
+    async read(type, query){
+        let flowDef = this.flowDefs[type] || {};
+        let objectType = this.schemaFactory.getOTC(type)
+
+        let path = new FlowPath(objectType, flowDef)
+        let batches = path.getBatched();
+        console.log("Get with", type, query)
+        let adapter = new MergedAdapter(objectType, this.stores, batches)
+        let fn = adapter.getProvider()
+        return await fn(query)
+    }
+
+    async readAll(type){
+        let flowDef = this.flowDefs[type] || {};
+        let objectType = this.schemaFactory.getOTC(type)
+
+        const path = new FlowPath(objectType, flowDef)
+        let batches = path.getBatched();
+        let adapter = new MergedAdapter(objectType, this.stores, batches)
+        let result = await adapter.getAllProvider()()
+        return result;
     }
 
 }
