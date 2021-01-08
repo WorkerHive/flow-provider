@@ -1,4 +1,4 @@
-import { Transform, mergeSchemas, gql } from 'apollo-server'
+/*
 import { getDirectives, mapSchema, MapperKind } from '@graphql-tools/utils'
 import { isNativeGraphQLType } from './native-symbols'
 import { objectValues, compact } from './utils'
@@ -196,3 +196,4 @@ export default function integrationTransformer (){
     }
 }
 
+*/
