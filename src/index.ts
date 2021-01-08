@@ -8,7 +8,7 @@ import { SchemaComposer, schemaComposer } from 'graphql-compose';
 import FlowConnector from './connectors/flow';
 import StoreManager from './stores';
 
-import MongoStore from './stores/mongo'
+import { MongoStore, MSSQLStore } from './stores'
 
 const { 
     InputDirective,
@@ -21,7 +21,8 @@ import {
     InputTransform,
     CRUDTransform,
     ConfigurableTransform,
-    UploadTranform
+    UploadTranform,
+    IntegrationTransform
 } from './transforms'
 
 import {merge} from 'lodash';
@@ -29,7 +30,7 @@ import resolvers from './resolver-base'
 
 export class FlowProvider{
 
-    public stores : StoreManager = new StoreManager();
+    public stores : StoreManager;
     public connector: FlowConnector;
 
     public server: any;
@@ -63,6 +64,7 @@ export class FlowProvider{
         const { inputTypeDefs, inputTransformer } = InputTransform()
         const { configurableTypeDefs, configurableTransformer } = ConfigurableTransform()
         const { crudTypeDefs, crudTransformer } = CRUDTransform();
+        const { integrationTypeDefs, integrationTransformer } = IntegrationTransform();
 
         console.log("Adding type defs")
 
@@ -94,6 +96,8 @@ export class FlowProvider{
         crudTransformer(this.schemaFactory)
         uploadTransformer(this.schemaFactory)
         configurableTransformer(this.schemaFactory)
+
+        integrationTransformer(this.schemaFactory)
 
         let typeMap = this.schemaFactory.types;
 
@@ -132,6 +136,7 @@ export class FlowProvider{
 
 
 export { 
-    MongoStore
+    MongoStore,
+    MSSQLStore
 }
 

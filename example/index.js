@@ -1,6 +1,6 @@
 
 const { ApolloServer, makeExecutableSchema } = require('apollo-server')
-const {FlowProvider, MongoStore} = require('..')
+const {FlowProvider, MongoStore, MSSQLStore} = require('..')
 const { schemaComposer } = require('graphql-compose');
 
 const typeDefs = `
@@ -36,9 +36,8 @@ const typeDefs = `
 
 let flowDefs = {
     MergedType: {
-        id: "jsis:MergedTypes:_id",
-        name: "jsis:MergedTypes:JobName",
-        weirdField: "jam:Max:field",
+        id: "sqlTest:Relational:ID",
+        name: "sqlTest:Relational:Name",
         refs: {
             "id": ["app:MergedType:_id"]
         }
@@ -75,8 +74,11 @@ flowProvider.applyInit((opts) => {
     })
 })
 
+console.log(flowProvider.stores.getTypes())
+
 flowProvider.stores.initializeAppStore({url: 'mongodb://localhost', dbName: 'test-db'})
 
+flowProvider.stores.registerStore('sqlTest', new MSSQLStore({host: 'localhost', user: 'sa', pass: 'TestPassword!', dbName: 'SQLTest'}))
 flowProvider.stores.registerStore('jsis', new MongoStore({url: 'mongodb://localhost', dbName: '2nd-test'}))
 flowProvider.stores.registerStore('jam', new MongoStore({url: 'mongodb://localhost', dbName: 'jam-jar'}))
 

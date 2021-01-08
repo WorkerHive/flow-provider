@@ -1,4 +1,4 @@
-import { NamedTypeComposer, ObjectTypeComposer } from "graphql-compose";
+import { NamedTypeComposer, ObjectTypeComposer, ObjectTypeComposerFieldConfig } from "graphql-compose";
 import { GraphQLNamedType } from "graphql-compose/lib/graphql";
 
 const { objectValues } = require("../transforms/utils");
@@ -8,7 +8,7 @@ export default class FlowPath{
 
     public typeDef : ObjectTypeComposer<any>;
     public provides: any;
-    private flow : any;
+    public flow : any;
     private flipped: any;
 
     constructor(typeDef : ObjectTypeComposer<any>, provides : any){
@@ -23,23 +23,25 @@ export default class FlowPath{
     setupOrDefault(){
 
         let fields = this.typeDef.getFields() 
+
         for(var k in fields){
 
-            let field = fields[k].astNode;
-            
-            let key = field.name.value;
+            const fieldType = this.typeDef.getFieldTypeName(k)
+            const key = k;        
 
             
             if(this.provides[key]){
                 this.flow[key] = this.provides[key]
             }else{
                 let type;
-                if(field.type.kind == "NamedType"){
-                    type = field.type.name.value;
-                }else if(field.type.kind == "ListType"){
-                    type = JSON.parse(JSON.stringify(field.type.type)).name.value;
+                if(!fieldType.match(/\[(.*?)\]/)){
+                    type = fieldType;
+                }else{
+                    type = fieldType.match(/\[(.*?)\]/)[1]
+                   // type = JSON.parse(JSON.stringify(field.type.type)).name.value;
                 }
 
+                console.log("TYPE", type)
                 if(type == "ID") {
                     this.flow[key] = `app:${this.typeDef.getTypeName()}:_id`;
                 }else{

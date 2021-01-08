@@ -1,7 +1,7 @@
 import { ObjectTypeComposer } from "graphql-compose";
 
 import MongoAdapter from '../adapters/mongo'
-const MSSQLAdapter = require('../adapters/mssql');
+import MSSQLAdapter from '../adapters/mssql'
 
 const { objectValues } = require('../transforms/utils');
 const { objectFlip } = require('../utils/flow-query');
@@ -74,13 +74,14 @@ export default class MergedAdapter extends BaseAdapter{
 
         this.iteratePaths(primaryActions, (store, path, action) => {
             console.log("Action", action)
-            let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+            let adapter = this.storeList.get(store).getAdapter();
+
             let func = get_func(adapter, path, action[store][path])
             actions.push(func)
         })
 
         this.iteratePaths(supportingActions, (store, path, action) => {
-            let adapter = new MongoAdapter(this.storeList.getStore(store).db)
+            let adapter = this.storeList.get(store).getAdapter();
 
             let _refs = {};
             for(var k in refs){
@@ -136,6 +137,17 @@ export default class MergedAdapter extends BaseAdapter{
         })
 
         return () => {
+
+            /*
+                Split action execution
+
+                actions runs -> [Results[], Results[]]
+                actions modifies query if needed
+                supporting runs -> [Results[], Results[]]
+
+                results.join(refs)
+            */
+
             return Promise.all(actions.map((x) => x())).then((result) => {
                 let r  = result;
 
@@ -145,11 +157,11 @@ export default class MergedAdapter extends BaseAdapter{
                     console.log(r, r2, refs)
 
                     
-                    return unionWith(r, r2, (arrVal, othVal) => {
+                    let union = unionWith(r[0], r2[0], (arrVal, othVal) => {
                         for(var k in refs){
-                            console.log("Checking ref", k)
-                            if(isEqual(arrVal[k], othVal[k])){
-                                console.log("Checked")
+                            console.log("Checking ref", k, arrVal, othVal)
+                            if(isEqual(`${arrVal[k]}`, `${othVal[k]}`)){
+                                console.log("Checked", arrVal[k], othVal[k], arrVal[k] == othVal[k])
                                 return merge(othVal, arrVal)
                             }
                         }
@@ -162,9 +174,10 @@ export default class MergedAdapter extends BaseAdapter{
                         }else{
                             return false;
                         }*/
-                    })[0]
+                    })
+                    console.log(union);
 
-                    return results
+                    return union;
                 })
             })
         }  

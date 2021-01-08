@@ -1,9 +1,9 @@
-const BaseAdapter = require("../base-adapter");
-const { getFields, mapForward, mapQuery, objectFlip } = require('../../utils/flow-query')
-const sql = require('mssql');
-const { camelCase } = require("camel-case");
+import BaseAdapter from "../base-adapter"
+import { mapBack, getFields, mapForward, mapQuery, objectFlip } from '../../utils/flow-query'
+import sql from 'mssql';
+import { camelCase } from "camel-case"
 
-class MSSQLAdapter extends BaseAdapter{
+export default class MSSQLAdapter extends BaseAdapter{
 
     getType(type){
         console.log("Type", type)
@@ -20,6 +20,16 @@ class MSSQLAdapter extends BaseAdapter{
                 console.log("No type found for", type)
                 return null;
         }
+    }
+
+    async request(inputs, query){
+        let request = new sql.Request();
+        for(var k in inputs){
+            request.input(k, inputs[k].type, inputs[k].value)
+        }
+        let result = await request.query(query);
+        console.log("Request result", result);
+        return result.recordset;
     }
 
     deleteProvider(bucket, typeDef, provides){
@@ -90,11 +100,32 @@ class MSSQLAdapter extends BaseAdapter{
     getProvider(bucket, typeDef, provides){
         let {fields, empty} = getFields(provides)
 
-        let query = `SELECT ${fields.join(', ')} FROM ${bucket.name}`;
-        return async (search) => {
-            console.log(search, query)
+        return async (query) => {
+            let request = new sql.Request();
+            let whereClause = '';
+            for(var k in query){
+                request.input(k, sql.VarChar, query[k])
+                whereClause += `${k}=@${k}`
+            }
+            let sqlQuery = `SELECT ${fields.join(', ')} FROM ${bucket.name} WHERE ${whereClause}`;
+            console.log("GET", sqlQuery);
+            let result = await request.query(sqlQuery)
+            console.log(result)
+        }
+    }
+
+    getAllProvider(bucket, typeDef, provides){
+        console.log("All provides", provides);
+        let { fields, empty } = getFields(objectFlip(provides))
+
+        let query = `SELECT ${fields.join(', ')} FROM ${bucket.name}`
+
+        console.log("MSSQL Get ALl", query)
+        return async () => {
+            let result = await this.request({}, query);
+
+    
+            return result.map((item) => mapBack(objectFlip(provides), item))
         }
     }
 }
-
-module.exports = MSSQLAdapter;

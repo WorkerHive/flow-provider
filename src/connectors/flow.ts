@@ -2,18 +2,23 @@ import { NamedTypeComposer, SchemaComposer, TypeMapper, TypeStorage } from "grap
 
 import MergedAdapter from '../adapters';
 import FlowPath from '../flow-path'
+import StoreManager from "../stores";
 
 export default class FlowConnector{
 
     private composer: SchemaComposer<any>;
     private flowDefs : any;
-    private stores : any;
+    private stores : StoreManager;
 
     constructor(composer: SchemaComposer<any>, flowDefs, stores){
         this.composer = composer;
         this.flowDefs = flowDefs;
         this.stores = stores;
 
+        (async () => {
+            let storeType = this.composer.getOTC('IntegrationStore')
+            await this.stores.rehydrateStores(storeType);
+        })()
     }
 
     async add(type, object){
