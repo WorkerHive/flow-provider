@@ -1,6 +1,6 @@
 {
   "name": "@workerhive/flow-provider",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "dist/index.js",
   "repository": "git@github.com:WorkerHive/flow-provider.git",
   "author": "Ross Leitch <professional.balbatross@gmail.com>",
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@types/graphql": "^14.5.0",
     "@vercel/ncc": "^0.26.1",
-    "@workerhive/graph": "^1.0.3",
+    "@workerhive/graph": "^1.0.7",
     "mongodb": "^3.6.3",
     "mssql": "^6.3.0",
     "nodemon": "^2.0.6",

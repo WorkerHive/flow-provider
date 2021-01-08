@@ -320,10 +320,10 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.2.1.tgz#7513d7a769e3f97958de799b5b49874425ae3396"
   integrity sha512-Zj1z6AyS+vqV6Hfi7ngCjFGdHV5EwZNIHo6QfFTNe9PyW+zBU1zJ9BiOW1pmUEq950RC4+Dym6flyA/61/vhyw==
 
-"@workerhive/graph@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.3.tgz#26977e28f47b500302102d3d05ca051e579f2780"
-  integrity sha512-TgaEGOpVlpTD8hQGt58TuRRzjiz3Np1vvBAFGY/z+41fByFeTw5olA8TNN9ru5NbzQSdKzwC2SUKSSzbab2ECA==
+"@workerhive/graph@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.7.tgz#4305915da377a41973958c0a80b20103d8ccd82b"
+  integrity sha512-gP2BhOWlqt2JZHI/nFhQW+lhUTCR2eErGGbipxbkIqSIGXvf9EiMJtLJqRuhvZU5n4+Zs+LYR5zwilKBk3QEUA==
   dependencies:
     "@graphql-tools/schema" "^7.1.2"
     "@workerhive/mq" "^1.0.0"
@@ -334,7 +334,6 @@
     file-extension "^4.0.5"
     fs-capacitor "^6.2.0"
     graphql "^15.4.0"
-    graphql-compose "^7.24.1"
     jsonwebtoken "^8.5.1"
     jwt-decode "^3.1.2"
     lodash "^4.17.20"
@@ -1552,14 +1551,6 @@ graphql-compose@^7.23.0:
     graphql-type-json "0.3.2"
     object-path "^0.11.4"
 
-graphql-compose@^7.24.1:
-  version "7.24.1"
-  resolved "https://registry.yarnpkg.com/graphql-compose/-/graphql-compose-7.24.1.tgz#2cbd9270e4d4bf34bb3c614276139a7e54cd31df"
-  integrity sha512-gIqQn399xx736Xbtfa9IQbsaY3FTZKxAjNGeJh/tkgj0GfMmoYNEIDqsUzrsbnWDrAOvln2tJEOqsuykl23xeg==
-  dependencies:
-    graphql-type-json "0.3.2"
-    object-path "0.11.5"
-
 graphql-type-json@0.3.2, graphql-type-json@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
@@ -2526,7 +2517,7 @@ object-assign@^4.1.0:
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
 
-object-path@0.11.5, object-path@^0.11.4:
+object-path@^0.11.4:
   version "0.11.5"
   resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.5.tgz#d4e3cf19601a5140a55a16ad712019a9c50b577a"
   integrity sha512-jgSbThcoR/s+XumvGMTMf81QVBmah+/Q7K7YduKeKVWL7N111unR2d6pZZarSk6kY/caeNxUDyxOvMWyzoU2eg==

@@ -29,9 +29,6 @@ export class FlowConnector extends BaseConnector{
     public schema: GraphQLSchema;
     public schemaOpts: any;
 
-    private parent: GraphBase;
-    private schemaFactory: SchemaComposer<any>;
-
     constructor(flowDefs, userResolvers){
         super();
         this.stores = new StoreManager();
@@ -41,6 +38,9 @@ export class FlowConnector extends BaseConnector{
     }
 
     setParent(parent : GraphBase){
+
+        this
+
         this.parent = parent;
         
         this.schemaFactory.merge(parent.schema)
