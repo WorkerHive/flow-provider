@@ -38,12 +38,10 @@ export class FlowConnector extends BaseConnector{
     }
 
     setParent(parent : GraphBase){
-
-        this
-
+        console.log("Set parent")
         this.parent = parent;
         
-        this.schemaFactory.merge(parent.schema)
+        if(this.parent.schema) this.schemaFactory.merge(this.parent.schema)
     }
 
     async create(type, object){
