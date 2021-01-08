@@ -5,7 +5,7 @@ import StoreManager from './stores';
 
 import { MongoStore, MSSQLStore } from './stores'
 
-import { GraphConnector } from '@workerhive/graph';
+import { BaseConnector } from '@workerhive/graph';
 //Replace below
 
 import {merge} from 'lodash';
@@ -13,7 +13,7 @@ import resolvers from './resolver-base'
 import MergedAdapter from './adapters';
 import FlowPath from './flow-path';
 
-export class FlowConnector implements GraphConnector{
+export class FlowConnector extends BaseConnector{
 
     public stores : StoreManager;
     public connector: FlowConnector;
@@ -31,12 +31,16 @@ export class FlowConnector implements GraphConnector{
 
     private schemaFactory: SchemaComposer<any>;
 
-    constructor(typeDefs, flowDefs, userResolvers){
+    constructor(flowDefs, userResolvers){
+        super();
         this.stores = new StoreManager();
-        this.typeDefs = typeDefs;
         this.flowDefs = flowDefs;
         this.userResolvers = userResolvers;
         this.flowResolvers = merge(resolvers, userResolvers)
+    }
+
+    setParent(parent){
+        this.schemaFactory.merge(parent)
     }
 
     async create(type, object){

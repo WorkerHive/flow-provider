@@ -320,10 +320,10 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-1.2.1.tgz#7513d7a769e3f97958de799b5b49874425ae3396"
   integrity sha512-Zj1z6AyS+vqV6Hfi7ngCjFGdHV5EwZNIHo6QfFTNe9PyW+zBU1zJ9BiOW1pmUEq950RC4+Dym6flyA/61/vhyw==
 
-"@workerhive/graph@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.1.tgz#21d354ff9e964d4b0e13afa67c9ccbf0c54807e7"
-  integrity sha512-6kUwtQjx8YLK0yMC00OvpXhW5lUKxL8ec2DAU1X6wxChpwfqAoK2Z3BB8Wai02NJMah5QxwChR/UxMwOkPpvsA==
+"@workerhive/graph@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@workerhive/graph/-/graph-1.0.2.tgz#cce9e970b7ba30f1346c6ef60f3546bad41f57bc"
+  integrity sha512-+Y9joqefxx6MkaPAHwvdINZ9POwcrjTm+Gvqt8kkmsX/qlWejR2Az2liDtHjxAg/kNG35tvTPj2gpRXihk1Jaw==
   dependencies:
     "@graphql-tools/schema" "^7.1.2"
     "@workerhive/mq" "^1.0.0"
