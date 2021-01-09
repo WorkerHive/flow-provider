@@ -132,7 +132,7 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
 
             schemaComposer.Query.addFields({
                 storeTypes: {
-                    type: 'StoreType',
+                    type: '[StoreType]',
                     resolve: (parent, args, context : GraphContext) => {
                         return (context.connector as FlowConnector).stores.getTypes();
                     }
