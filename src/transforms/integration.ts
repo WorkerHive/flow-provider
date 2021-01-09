@@ -132,15 +132,15 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
 
             schemaComposer.Query.addFields({
                 storeTypes: {
-                    type: '[StoreType]',
+                    type: 'StoreType',
                     resolve: (parent, args, context : GraphContext) => {
                         return (context.connector as FlowConnector).stores.getTypes();
                     }
                 },
                 stores: {
                     type: 'JSON',
-                    resolve: (parent, args, context) => {
-                        return context.connector.stores.getAll();
+                    resolve: (parent, args, context : GraphContext) => {
+                        return (context.connector as FlowConnector).stores.getAll();
                     }
                 },
                 storeLayout: {
@@ -148,8 +148,8 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                     args: {
                         name: 'String'
                     },
-                    resolve: async (parent, args, context) => {
-                        return await context.connector.stores.get(args.name).getBucketGroups();
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await (context.connector as FlowConnector).stores.get(args.name).getBucketGroups();
                     }
                 },
                 integrationMap: {
@@ -157,14 +157,14 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                     args: {
                         id: 'String'
                     },
-                    resolve: async (parent, args, context) => {
-                        return await context.connector.get('IntegrationMap', {id: args.id})
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.read('IntegrationMap', {id: args.id})
                     }
                 },
                 integrationMaps: {
                     type: '[IntegrationMap]',
-                    resolve: async (parent, args, context) => {
-                        return await context.connector.getAll('IntegrationMap')
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.readAll('IntegrationMap')
                     }
                 },
                 integrationStore: {
@@ -172,14 +172,14 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                     args: {
                         id: 'ID'
                     },
-                    resolve: async (parent, args, context) => {
-                        return await context.connector.get('IntegrationStore', {id: args.id})
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.read('IntegrationStore', {id: args.id})
                     }
                 },
                 integrationStores: {
                     type: '[IntegrationStore]',
-                    resolve: async (parent, args, context) => {
-                        return await context.connector.getAll('IntegrationStore')
+                    resolve: async (parent, args, context : GraphContext) => {
+                        return await context.connector.readAll('IntegrationStore')
                     }
                 }
             })
