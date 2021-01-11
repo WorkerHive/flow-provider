@@ -15,9 +15,6 @@ export default class MongoAdapter extends BaseAdapter{
         return async (search) => {
             console.log(provides);
 
-            for(var k in search){
-                search[k] = (typeDef.getFields()[k].type.toString() == "ID") ?  ObjectId(search[k]) : search[k];
-            }
             let query = mapQuery(objectFlip(provides), search)
             let result = await this.client.collection(`${bucket.name}`).findOne(query)
             return mapForward(typeDef, provides, result)
@@ -33,11 +30,7 @@ export default class MongoAdapter extends BaseAdapter{
 
     updateProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async(query, obj) => {
-            for(var k in query){
-                query[k] = (typeDef.getFields()[k].type.toString() == "ID") ? ObjectId(query[k]) : query[k]
-            }
-
-            let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
+             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
             let inputObject = mapBack(provides, obj)
             console.log("UPDATE INPUT OBJ", provides, inputObject, obj)
             for(var key in inputObject){
@@ -60,9 +53,7 @@ export default class MongoAdapter extends BaseAdapter{
 
     deleteProvider(bucket, typeDef : GraphQLObjectType, provides){
         return async(query) => {
-            for(var k in query){
-                query[k] = (typeDef.getFields()[k].type.toString() == "ID") ? ObjectId(query[k]) : query[k]
-            }
+   
             let q = mapQuery(objectFlip(Object.assign({}, provides)), query)
             console.log(q)
             return await this.client.collection(`${bucket.name}`).deleteOne(q)
