@@ -1,5 +1,4 @@
 import { GraphQLObjectType } from "graphql-compose/lib/graphql";
-
 const { ObjectId } = require("mongodb");
 const {  objectFlip, mapForward, mapBack, mapQuery } = require("../../utils/flow-query");
 const BaseAdapter = require("../base-adapter");

@@ -4,7 +4,7 @@ import { SchemaComposer, schemaComposer } from 'graphql-compose';
 import StoreManager from './stores';
 
 import { MongoStore, MSSQLStore } from './stores'
-
+import { v4 } from 'uuid'
 import { BaseConnector, BaseGraph } from '@workerhive/graph';
 //Replace below
 import { transform as setupConfig } from './transforms/integration'
@@ -54,6 +54,7 @@ export class FlowConnector extends BaseConnector{
     }
 
     async create(type, object){
+        if(!object.id) object.id = v4();
         let flowDef = this.flowDefs[type] || {};   
         let objectType = this.schemaFactory.getOTC(type)
         let path = new FlowPath(objectType, flowDef)
