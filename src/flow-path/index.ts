@@ -43,7 +43,7 @@ export default class FlowPath{
 
                 console.log("TYPE", type)
                 if(type == "ID") {
-                    this.flow[key] = `app:${this.typeDef.getTypeName()}:_id`;
+                    this.flow[key] = `app:${this.typeDef.getTypeName()}:id`;
                 }else{
                     this.flow[key] = `app:${this.typeDef.getTypeName()}:${key}`
                 }
