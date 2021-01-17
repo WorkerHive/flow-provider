@@ -155,28 +155,33 @@ export default class MergedAdapter extends BaseAdapter {
                 return Promise.all(supporting.map((action) => action())).then((results) => {
 
                     let r2 = results;
-                    console.log([...r, ...r2])
-                    let union = unionWith(...r, ...r2, (arrVal, othVal) => {
-                        for (var k in refs) {
-                            console.log("Checking ref", k, arrVal, othVal)
-                            if (isEqual(`${arrVal[k]}`, `${othVal[k]}`)) {
-                                console.log("Checked", arrVal[k], othVal[k], arrVal[k] == othVal[k])
-                                return merge(othVal, arrVal)
+                    
+                    if(Object.keys(refs).length > 0){
+
+                        let union = unionWith(...r, ...r2, (arrVal, othVal) => {
+                            for (var k in refs) {
+                                console.log("Checking ref", k, arrVal, othVal)
+                                if (isEqual(`${arrVal[k]}`, `${othVal[k]}`)) {
+                                    console.log("Checked", arrVal[k], othVal[k], arrVal[k] == othVal[k])
+                                    return merge(othVal, arrVal)
+                                }
                             }
-                        }
-                        return othVal;
-                        /*
-                        if(`${arrVal.id}` == `${othVal.id}`){
-                            console.log("UNION", arrVal, othVal)
+                            return othVal;
+                            /*
+                            if(`${arrVal.id}` == `${othVal.id}`){
+                                console.log("UNION", arrVal, othVal)
 
-                            return merge(othVal, arrVal);
-                        }else{
-                            return false;
-                        }*/
-                    })
-                    console.log(union);
+                                return merge(othVal, arrVal);
+                            }else{
+                                return false;
+                            }*/
+                        })
+                        console.log(union);
 
-                    return union;
+                        return union;
+                    }else{
+                        return r.flat()
+                    }
                 })
 
             })
