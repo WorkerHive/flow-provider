@@ -130,7 +130,7 @@ export default class MergedAdapter extends BaseAdapter {
     }
 
     getAllProvider() {
-        const { refs } = this.paths;
+        let { refs } = this.paths;
 
         const { actions, supporting } = this.doActions((adapter, bucket, provides) => {
             return adapter.getAllProvider({ name: bucket }, this.type, provides)
@@ -157,7 +157,10 @@ export default class MergedAdapter extends BaseAdapter {
                     let r2 = results;
                     
                     if(Object.keys(refs).length > 0){
+                        refs = {id: []}
+                    }
 
+                    //Refs needs to be looked at and adjusted for real use cases, at current it just checks ref keys not foreign keys
                         let union = unionWith(...r, ...r2, (arrVal, othVal) => {
                             for (var k in refs) {
                                 console.log("Checking ref", k, arrVal, othVal)
@@ -179,9 +182,7 @@ export default class MergedAdapter extends BaseAdapter {
                         console.log(union);
 
                         return union;
-                    }else{
-                        return r.flat()
-                    }
+                    
                 })
 
             })
