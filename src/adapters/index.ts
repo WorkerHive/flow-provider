@@ -151,7 +151,7 @@ export default class MergedAdapter extends BaseAdapter {
             return Promise.all(actions.map((x) => x())).then((result) => {
                 let r = result;
 
-
+                if(supporting.length > 0){
                 return Promise.all(supporting.map((action) => action())).then((results) => {
 
                     let r2 = results;
@@ -184,6 +184,9 @@ export default class MergedAdapter extends BaseAdapter {
                         return union;
                     
                 })
+                }else{
+                    return r.flat()
+                }
 
             })
         }

@@ -108,6 +108,7 @@ export class FlowConnector extends BaseConnector{
         let batches = path.getBatched();
         let adapter = new MergedAdapter(objectType, this.stores, batches)
         let result = await adapter.getAllProvider()()
+        console.log("Get all result")
         return result;
     }
 
