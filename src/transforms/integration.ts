@@ -125,7 +125,7 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                     },
                     resolve: async (parent, args, context : GraphContext) => {
                         
-                        return await context.connector.delete('IntegrationIntegrationStore', {id: args.id})
+                        return await context.connector.delete('IntegrationStore', {id: args.id})
                     }
                 }
             })

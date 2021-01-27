@@ -78,6 +78,7 @@ export default class StoreManager {
     setupStore(opts){
         let Store = Stores.filter((a) => a.type == opts.type.id);
         if(Store.length > 0){
+            console.log("Setup Store", Store)
             this.registerStore(opts.name, new Store[0]({
                 host: opts.host,
                 user: opts.user,
