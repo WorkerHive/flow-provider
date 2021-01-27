@@ -160,6 +160,16 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                         return await (context.connector as FlowConnector).stores.get(args.storeName).layout();
                     }
                 },
+                bucketLayout: {
+                    type: 'JSON',
+                    args: {
+                        storeName: 'String',
+                        bucketName: 'String'
+                    },
+                    resolve: async (parent, args, context: GraphContext) => {
+                        return await (context.connector as FlowConnector).stores.get(args.storeName).bucketLayout(args.bucketName);
+                    }
+                },
                 integrationMap: {
                     type: 'IntegrationMap',
                     args: {
