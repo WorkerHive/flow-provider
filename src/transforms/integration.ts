@@ -169,8 +169,7 @@ export const transform = (schema : SchemaComposer<any>) : {types: any, resolvers
                     resolve: async (parent, args, context: GraphContext) => {
                         console.log(`Get bucket layout store: ${args.storeName} bucket: ${args.bucketName}`)
                         const conn : FlowConnector = (context.connector as FlowConnector)
-                        const store = conn.stores.get(args.storeName);
-                        console.log(conn, store)
+                        const store = conn.stores.stores[args.storeName.trim()];
                         return await store.bucketLayout(args.bucketName);
                     }
                 },
