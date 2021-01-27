@@ -48,7 +48,7 @@ export default class MSSQLStore extends BaseStore {
 
     async layout(){
         
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             async.parallel([(cb) => {
                 let request = new sql.Request();
                 request.query('SELECT * FROM sys.Tables', cb)
