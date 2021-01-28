@@ -67,14 +67,14 @@ export default class FlowConnector{
         return await fn(query)
     }
 
-    async getAll(type){
+    async getAll(type, query: object = {}){
         let flowDef = this.flowDefs[type] || {};
         let objectType = this.composer.getOTC(type)
 
         const path = new FlowPath(objectType, flowDef)
         let batches = path.getBatched();
         let adapter = new MergedAdapter(objectType, this.stores, batches)
-        let result = await adapter.getAllProvider()()
+        let result = await adapter.getAllProvider()(query)
         return result;
     }
 }
