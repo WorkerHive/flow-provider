@@ -21,8 +21,9 @@ export default class MongoAdapter extends BaseAdapter{
     }
 
     getAllProvider(bucket, typeDef : GraphQLObjectType, provides){
-        return async () => {
-            let results = await this.client.collection(`${bucket.name}`).find().toArray()
+        return async (search) => {
+            let query = mapQuery(objectFlip(provides), search)
+            let results = await this.client.collection(`${bucket.name}`).find(query).toArray()
             return results.map((x) => mapForward(typeDef, provides, x));
         }
     }

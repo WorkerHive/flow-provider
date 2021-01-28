@@ -136,7 +136,7 @@ export default class MergedAdapter extends BaseAdapter {
             return adapter.getAllProvider({ name: bucket }, this.type, provides)
         })
 
-        return () => {
+        return (query: object) => {
 
             /*
                 Split action execution
@@ -148,11 +148,11 @@ export default class MergedAdapter extends BaseAdapter {
                 results.join(refs)
             */
 
-            return Promise.all(actions.map((x) => x())).then((result) => {
+            return Promise.all(actions.map((x) => x(query))).then((result) => {
                 let r = result;
 
                 if(supporting.length > 0){
-                return Promise.all(supporting.map((action) => action())).then((results) => {
+                return Promise.all(supporting.map((action) => action(query))).then((results) => {
 
                     let r2 = results;
                     

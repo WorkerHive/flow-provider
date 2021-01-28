@@ -100,14 +100,14 @@ export class FlowConnector extends BaseConnector{
         return await fn(query)
     }
 
-    async readAll(type){
+    async readAll(type, query: object = {}){
         let flowDef = this.flowDefs[type] || {};
         let objectType = this.schemaFactory.getOTC(type)
 
         const path = new FlowPath(objectType, flowDef)
         let batches = path.getBatched();
         let adapter = new MergedAdapter(objectType, this.stores, batches)
-        let result = await adapter.getAllProvider()()
+        let result = await adapter.getAllProvider()(query)
         console.log("Get all result")
         return result;
     }
