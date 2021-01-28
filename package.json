@@ -27,13 +27,13 @@
     "graphql": "15.3.0"
   },
   "peerDependencies": {
-    "@workerhive/graph": "^1.0.11",
+    "@workerhive/graph": "^1.0.38",
     "graphql": "^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0"
   },
   "devDependencies": {
     "@types/graphql": "^14.5.0",
     "@vercel/ncc": "^0.26.1",
-    "@workerhive/graph": "^1.0.12",
+    "@workerhive/graph": "^1.0.38",
     "mongodb": "^3.6.3",
     "mssql": "^6.3.0",
     "nodemon": "^2.0.6",
